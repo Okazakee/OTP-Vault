@@ -12,11 +12,11 @@ export default function OnboardingPage1() {
   return (
     <View style={styles.container}>
       <View style={styles.content}>
-        <Image 
-          source={require('../../assets/vault.svg')}
+        <Image
+          source={require('@/assets/vault.png')} // Make sure vault.png exists
           style={styles.image}
           // Add a fallback for missing image during development
-          onError={(e) => console.log('Image not found, please add a welcome-icon.png to assets folder')}
+          onError={(e) => console.log('Image not found: vault.png')}
         />
         <Text style={styles.title}>Welcome to the App!</Text>
         <Text style={styles.subtitle}>

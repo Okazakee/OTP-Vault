@@ -22,7 +22,8 @@ import {
   RefreshCw,
   Clock,
   EyeOff,
-  Eclipse
+  Eclipse,
+  Laptop
 } from 'lucide-react-native';
 import { resetOnboarding } from '../utils/resetHelper';
 
@@ -324,6 +325,24 @@ export default function Settings() {
               </View>
             </LinearGradient>
           </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={() => router.push('/debug')}
+          >
+            <LinearGradient
+              colors={['#0088ff', '#00ffff']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.actionGradient}
+            >
+              <View style={styles.actionContent}>
+                <Laptop stroke="#FFFFFF" width={20} height={20} />
+                <Text style={styles.actionText}>DEBUG SCREEN</Text>
+              </View>
+            </LinearGradient>
+</TouchableOpacity>
+
         </View>
 
         {/* App Info */}

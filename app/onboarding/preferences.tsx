@@ -89,25 +89,6 @@ export default function Preferences() {
               value={darkMode}
             />
           </View>
-
-          <View style={styles.separator} />
-
-          {/* Data Sync Preference */}
-          <View style={styles.preferenceItem}>
-            <View>
-              <Text style={styles.preferenceTitle}>Data Synchronization</Text>
-              <Text style={styles.preferenceDescription}>
-                Automatically sync your data across devices
-              </Text>
-            </View>
-            <Switch
-              trackColor={{ false: '#767577', true: '#81b0ff' }}
-              thumbColor={dataSync ? '#007AFF' : '#f4f3f4'}
-              ios_backgroundColor="#3e3e3e"
-              onValueChange={toggleDataSync}
-              value={dataSync}
-            />
-          </View>
         </View>
       </View>
 
