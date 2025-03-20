@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from 'react';
+import { createContext, type ReactNode, useEffect, useState } from 'react';
 
 // Define what our entries look like
 type OTPEntry = {
@@ -21,7 +21,11 @@ const EntriesContext = createContext<EntriesContextType>({
   // empty function implementations...
 });
 
-export function EntriesProvider({ children }) {
+interface EntriesProviderProps {
+  children: ReactNode;
+}
+
+export function EntriesProvider({ children }: EntriesProviderProps) {
   // State for entries
   const [entries, setEntries] = useState<OTPEntry[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);

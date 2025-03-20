@@ -4,7 +4,6 @@ import AddButton from "./components/AddButton";
 import { router } from "expo-router";
 import TFAEntry from "./components/TFAEntry";
 import ScanQRButton from "./components/ScanQRButton";
-import ThemeSelector, { type ThemeOption } from "./components/ThemeSelector";
 
 type ColorScheme = "light" | "dark";
 type Preferences = {
@@ -26,7 +25,6 @@ export default function Components() {
         <Text style={getStyles("dark").infoLabel}>scan qr btn</Text>
         <ScanQRButton onPress={() => router.push('/components')} />
         <Text style={getStyles("dark").infoLabel}>theme selector</Text>
-        <ThemeSelector />
         <Text style={getStyles("dark").infoLabel}>add btn</Text>
       </View>
       <AddButton onPress={() => router.push('/components')} />

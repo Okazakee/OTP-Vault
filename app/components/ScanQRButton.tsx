@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet, View } from 'react-native';
+import { TouchableOpacity, Text, StyleSheet, View, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { QrCode } from 'lucide-react-native';
 
@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     letterSpacing: 3,
     textTransform: 'uppercase',
-    fontFamily: 'monospace',
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
   },
 });
 

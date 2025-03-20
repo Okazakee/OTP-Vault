@@ -49,12 +49,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         'biometricsEnabled',
         'userPIN'
       ];
-      
+
       await AsyncStorage.multiRemove(keysToRemove);
       setOnboardingCompleteState(false);
-      
+
       // Navigate to onboarding
-      router.replace('/onboarding/page1');
+      router.replace('/onboarding/welcome');
     } catch (error) {
       console.error('Failed to reset onboarding:', error);
     }
@@ -68,7 +68,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         await AsyncStorage.flushGetRequests();
         const value = await AsyncStorage.getItem('onboardComplete');
         console.log('Onboarding status:', value);
-        
+
         // Only set to true if explicitly 'true'
         setOnboardingCompleteState(value === 'true');
       } catch (error) {
@@ -89,10 +89,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (isLoading) return;
 
     const inAuthGroup = segments[0] === 'onboarding';
-    
+
     if (!onboardingComplete && !inAuthGroup) {
       console.log('Redirecting to onboarding from segments:', segments);
-      router.replace('/onboarding/page1');
+      router.replace('/onboarding/welcome');
     } else if (onboardingComplete && inAuthGroup) {
       console.log('Redirecting to home from onboarding');
       router.replace('/');

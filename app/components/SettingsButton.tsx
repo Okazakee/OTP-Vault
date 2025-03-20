@@ -1,73 +1,55 @@
-import React from 'react';
-import { TouchableOpacity, Text, StyleSheet, View } from 'react-native';
-import { Plus } from 'lucide-react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+import React, { useState } from 'react';
+import { TouchableOpacity, StyleSheet } from 'react-native';
+import { Svg, Path, Defs, LinearGradient, Stop } from 'react-native-svg';
+import { router } from 'expo-router';
 
-const SettingsButton = ({ onPress }: {onPress: () => void}) => {
+/**
+ * A settings icon button that navigates to the settings screen
+ * The icon changes to a gradient color when touched
+ */
+const SettingsButton = () => {
+  // Track whether the button is being pressed
+  const [isPressed, setIsPressed] = useState(false);
+
+  // Navigate to settings screen when pressed
+  const handlePress = () => {
+    router.push('/settings');
+  };
+
+  // SVG path for gear icon (similar to Lucide Settings icon)
+  const gearPath = "M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z";
+
   return (
     <TouchableOpacity
-      style={styles.buttonContainer}
-      onPress={onPress}
+      style={styles.iconButton}
+      onPress={handlePress}
       activeOpacity={0.7}
+      onPressIn={() => setIsPressed(true)}
+      onPressOut={() => setIsPressed(false)}
     >
-      <LinearGradient
-        colors={['#ff00ff', '#00ffff']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={styles.gradient}
-      >
-        <View style={styles.innerBorder}>
-          <View style={styles.content}>
-            <Plus stroke="#ffffff" width={24} height={24} strokeWidth={3} />
-            <Text style={styles.buttonText}>ADD 2FA OTP</Text>
-          </View>
-        </View>
-      </LinearGradient>
+      <Svg width={28} height={28} viewBox="0 0 24 24" fill="none" stroke={isPressed ? "url(#gradient)" : "#ffffff"} strokeWidth={2} strokeLinecap="square" strokeLinejoin="miter">
+        {isPressed && (
+          <Defs>
+            <LinearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <Stop offset="0%" stopColor="#ff00ff" />
+              <Stop offset="100%" stopColor="#00ffff" />
+            </LinearGradient>
+          </Defs>
+        )}
+        <Path d={gearPath} />
+      </Svg>
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
-  buttonContainer: {
-    display: 'flex',
-    marginVertical: 20,
-    alignSelf: 'center',
-    width: '95%', // This will extend the width to 80% of parent container
-    shadowColor: '#ff00ff',
-    shadowOffset: {
-      width: 0,
-      height: 8,
-    },
-    shadowOpacity: 0.5,
-    shadowRadius: 12,
-    elevation: 8,
-  },
-  gradient: {
-    borderRadius: 4,
-    padding: 2, // Border thickness
-  },
-  innerBorder: {
-    backgroundColor: '#121212',
-    borderRadius: 2,
-    padding: 16,
-  },
-  content: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '100%', // Ensure content takes full width
-  },
-  buttonText: {
-    color: '#ffffff',
-    marginLeft: 8,
-    // Once you've loaded the custom font: fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace', // Fallback
-    // fontFamily: 'PixelFont', // Use this line after setting up custom fonts
-    fontWeight: 'bold',
-    fontSize: 14,
-    letterSpacing: 3,
-    textTransform: 'uppercase',
-    fontFamily: 'monospace',
-  },
+  iconButton: {
+    padding: 8,
+    marginLeft: 'auto',
+    justifyContent: 'center', // Add vertical centering
+    alignItems: 'center',     // Add horizontal centering
+    alignSelf: 'center',      // Center the button itself in its parent
+  }
 });
 
 export default SettingsButton;

@@ -1,5 +1,7 @@
 // In a file like utils/otpUtils.ts
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 // Get all entries
 export async function getOTPEntries() {
   try {
