@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Switch, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Switch, TouchableOpacity, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { router } from 'expo-router';
 import { useAuth } from '../../context/AuthContext';
+import { ChevronLeft, Moon, Bell, Check } from 'lucide-react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 
 /**
  * Preferences screen for onboarding process
@@ -10,7 +13,7 @@ import { useAuth } from '../../context/AuthContext';
 export default function Preferences() {
   // Preference state
   const [notifications, setNotifications] = useState(true);
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(true);
   const [dataSync, setDataSync] = useState(true);
 
   // Auth context for completing onboarding
@@ -20,6 +23,11 @@ export default function Preferences() {
   const toggleNotifications = () => setNotifications(prev => !prev);
   const toggleDarkMode = () => setDarkMode(prev => !prev);
   const toggleDataSync = () => setDataSync(prev => !prev);
+
+  // Go back to security page
+  const goBack = () => {
+    router.push('/onboarding/security');
+  };
 
   /**
    * Save preferences and mark onboarding as complete
@@ -35,6 +43,7 @@ export default function Preferences() {
 
       console.log('Saving preferences and completing onboarding...');
       await AsyncStorage.setItem('userPreferences', JSON.stringify(preferences));
+      await AsyncStorage.setItem('themeMode', darkMode ? 'dark' : 'light');
 
       // Mark onboarding as complete using context
       await setOnboardingComplete(true);
@@ -46,125 +55,217 @@ export default function Preferences() {
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity style={styles.backButton} onPress={goBack}>
+          <ChevronLeft stroke="#ffffff" width={28} height={28} />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Preferences</Text>
+        <View style={styles.placeholder} />
+      </View>
+
       <View style={styles.content}>
-        <Text style={styles.title}>Customize Your Experience</Text>
         <Text style={styles.subtitle}>
-          Set your preferences for the app. You can always change these later in the settings.
+          Set your preferences for the app. You can always change these later in settings.
         </Text>
 
-        <View style={styles.preferencesContainer}>
-          {/* Notifications Preference */}
-          <View style={styles.preferenceItem}>
-            <View>
-              <Text style={styles.preferenceTitle}>Push Notifications</Text>
-              <Text style={styles.preferenceDescription}>
-                Receive notifications about important updates and events
-              </Text>
-            </View>
-            <Switch
-              trackColor={{ false: '#767577', true: '#81b0ff' }}
-              thumbColor={notifications ? '#007AFF' : '#f4f3f4'}
-              ios_backgroundColor="#3e3e3e"
-              onValueChange={toggleNotifications}
-              value={notifications}
-            />
-          </View>
-
-          <View style={styles.separator} />
-
-          {/* Dark Mode Preference */}
-          <View style={styles.preferenceItem}>
-            <View>
-              <Text style={styles.preferenceTitle}>Dark Mode</Text>
-              <Text style={styles.preferenceDescription}>
-                Use dark theme for comfortable viewing in low light
-              </Text>
-            </View>
-            <Switch
-              trackColor={{ false: '#767577', true: '#81b0ff' }}
-              thumbColor={darkMode ? '#007AFF' : '#f4f3f4'}
-              ios_backgroundColor="#3e3e3e"
-              onValueChange={toggleDarkMode}
-              value={darkMode}
-            />
-          </View>
-        </View>
-      </View>
-
-      {/* Complete Setup Button */}
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={completeOnboarding}
+        <LinearGradient
+          colors={['#ff00ff', '#00ffff']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.gradientCard}
         >
-          <Text style={styles.buttonText}>Complete Setup</Text>
-        </TouchableOpacity>
+          <View style={styles.cardContent}>
+            {/* Dark Mode Preference */}
+            <View style={styles.preferenceItem}>
+              <View style={styles.preferenceIconContainer}>
+                <Moon color={darkMode ? "#00ffff" : "#999999"} size={24} />
+              </View>
+              <View style={styles.preferenceTextContainer}>
+                <Text style={styles.preferenceTitle}>Dark Mode</Text>
+                <Text style={styles.preferenceDescription}>
+                  Use dark theme for comfortable viewing
+                </Text>
+              </View>
+              <Switch
+                trackColor={{ false: '#3e3e3e', true: '#81b0ff' }}
+                thumbColor={darkMode ? '#00ffff' : '#f4f3f4'}
+                ios_backgroundColor="#3e3e3e"
+                onValueChange={toggleDarkMode}
+                value={darkMode}
+              />
+            </View>
+
+            <View style={styles.divider} />
+
+            {/* Notifications Preference */}
+            <View style={styles.preferenceItem}>
+              <View style={styles.preferenceIconContainer}>
+                <Bell color={notifications ? "#00ffff" : "#999999"} size={24} />
+              </View>
+              <View style={styles.preferenceTextContainer}>
+                <Text style={styles.preferenceTitle}>Notifications</Text>
+                <Text style={styles.preferenceDescription}>
+                  Get alerts about security events
+                </Text>
+              </View>
+              <Switch
+                trackColor={{ false: '#3e3e3e', true: '#81b0ff' }}
+                thumbColor={notifications ? '#00ffff' : '#f4f3f4'}
+                ios_backgroundColor="#3e3e3e"
+                onValueChange={toggleNotifications}
+                value={notifications}
+              />
+            </View>
+          </View>
+        </LinearGradient>
       </View>
-    </ScrollView>
+
+      <TouchableOpacity
+        style={styles.buttonContainer}
+        onPress={completeOnboarding}
+        activeOpacity={0.7}
+      >
+        <LinearGradient
+          colors={['#ff00ff', '#00ffff']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.gradient}
+        >
+          <View style={styles.innerBorder}>
+            <View style={styles.buttonContent}>
+              <Text style={styles.buttonText}>COMPLETE SETUP</Text>
+              <Check color="#FFFFFF" size={24} />
+            </View>
+          </View>
+        </LinearGradient>
+      </TouchableOpacity>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
-  },
-  content: {
+    backgroundColor: '#000000',
     padding: 20,
+    paddingTop: 50,
   },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginTop: 40,
-    marginBottom: 12,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#666',
-    marginBottom: 40,
-    lineHeight: 24,
-  },
-  preferencesContainer: {
-    backgroundColor: '#f8f8f8',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 30,
-  },
-  preferenceItem: {
+  header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginBottom: 30,
+  },
+  backButton: {
+    padding: 8,
+  },
+  headerTitle: {
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+    fontWeight: 'bold',
+    fontSize: 24,
+    color: '#FFFFFF',
+    letterSpacing: 1,
+  },
+  placeholder: {
+    width: 44,
+  },
+  content: {
+    flex: 1,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#AAAAAA',
+    marginBottom: 30,
+    lineHeight: 24,
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+  },
+  gradientCard: {
+    width: '100%',
+    borderRadius: 8,
+    padding: 2,
+    marginBottom: 30,
+    shadowColor: '#ff00ff',
+    shadowOffset: {
+      width: 0,
+      height: 8,
+    },
+    shadowOpacity: 0.5,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  cardContent: {
+    backgroundColor: '#121212',
+    borderRadius: 6,
+    padding: 20,
+  },
+  preferenceItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingVertical: 12,
+  },
+  preferenceIconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#2A2A2A',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 15,
+  },
+  preferenceTextContainer: {
+    flex: 1,
   },
   preferenceTitle: {
     fontSize: 16,
     fontWeight: '600',
+    color: '#FFFFFF',
     marginBottom: 4,
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
   },
   preferenceDescription: {
-    fontSize: 14,
-    color: '#666',
-    maxWidth: '80%',
+    fontSize: 13,
+    color: '#AAAAAA',
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
   },
-  separator: {
+  divider: {
     height: 1,
-    backgroundColor: '#e0e0e0',
-    marginVertical: 8,
+    backgroundColor: '#333333',
+    marginVertical: 15,
   },
   buttonContainer: {
-    padding: 20,
-    paddingBottom: 40,
+    width: '100%',
+    marginTop: 20,
+    marginBottom: 30,
+    shadowColor: '#ff00ff',
+    shadowOffset: {
+      width: 0,
+      height: 8,
+    },
+    shadowOpacity: 0.5,
+    shadowRadius: 12,
+    elevation: 8,
   },
-  button: {
-    backgroundColor: '#007AFF',
-    padding: 18,
-    borderRadius: 12,
+  gradient: {
+    borderRadius: 4,
+    padding: 2,
+  },
+  innerBorder: {
+    backgroundColor: '#121212',
+    borderRadius: 2,
+    padding: 16,
+  },
+  buttonContent: {
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
   },
   buttonText: {
-    color: 'white',
+    color: '#FFFFFF',
     fontWeight: 'bold',
     fontSize: 16,
+    letterSpacing: 2,
+    marginRight: 10,
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
   },
 });

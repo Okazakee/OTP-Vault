@@ -1,46 +1,54 @@
 import React, { useState, useEffect } from "react";
 import { Text, View, StyleSheet, ScrollView, Platform } from "react-native";
-import { useColorScheme } from 'react-native';
 import { router } from "expo-router";
 import AddButton from "./components/AddButton";
+import TFAEntry from "./components/TFAEntry";
 
-// Import our utility function (which we'll create later)
-import { getOTPEntries } from "../utils/otpUtils";
+// Import our utility functions
+import { getOTPEntries, type OTPEntry, deleteOTPEntry } from "../utils/otpUtils";
 import SettingsButton from "./components/SettingsButton";
-import { Settings } from "lucide-react-native";
+import { useTheme } from "../context/ThemeContext";
 
 type ColorScheme = "light" | "dark";
 
 export default function Index() {
-  // Track if we have entries and loading state
-  const [hasEntries, setHasEntries] = useState(false);
+  // Track entries and loading state
+  const [entries, setEntries] = useState<OTPEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Get system color scheme for styling
-  const systemColorScheme = useColorScheme() as ColorScheme || "light";
-  const styles = getStyles(systemColorScheme);
+  // Get theme for styling
+  const { activeTheme } = useTheme();
+  const styles = getStyles(activeTheme);
 
-  // Check for entries when component mounts
-  useEffect(() => {
-    // Function to check if we have any entries
-    const checkForEntries = async () => {
-      try {
-        setIsLoading(true);
+  // Handle deleting an entry
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteOTPEntry(id);
+      // Refresh entries after deletion
+      loadEntries();
+    } catch (error) {
+      console.error('Error deleting entry:', error);
+    }
+  };
 
-        // This function doesn't exist yet - we'll implement it later
-        // For now, it will always return null (empty)
-        const entries = await getOTPEntries();
+  // Load entries from storage
+  const loadEntries = async () => {
+    try {
+      setIsLoading(true);
+      const loadedEntries = await getOTPEntries();
+      setEntries(loadedEntries || []);
+    } catch (error) {
+      console.error('Error loading entries:', error);
+      setEntries([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-        // Update state based on whether entries exist
-        setHasEntries(entries !== null && entries.length > 0);
-      } catch (error) {
-        console.error('Error checking for entries:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    checkForEntries();
+  // Load entries when component mounts
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+    useEffect(() => {
+    loadEntries();
   }, []);
 
   return (
@@ -52,12 +60,13 @@ export default function Index() {
       >
         {/* App title */}
         <View style={styles.header}>
+          <View style={styles.placeholder} />
           <Text style={styles.appTitle}>VaultFactor</Text>
           <SettingsButton />
         </View>
 
         {/* Empty state message */}
-        {!hasEntries && !isLoading && (
+        {entries.length === 0 && !isLoading && (
           <View style={styles.emptyStateContainer}>
             <Text style={styles.emptyStateTitle}>No OTP Entries</Text>
             <Text style={styles.emptyStateMessage}>
@@ -66,7 +75,19 @@ export default function Index() {
           </View>
         )}
 
-        {/* Later, we'll add the entries list here when hasEntries is true */}
+        {/* Display the entries */}
+        {entries.length > 0 && !isLoading && (
+          <View style={styles.entriesContainer}>
+            {entries.map((entry) => (
+              <TFAEntry
+                key={entry.id}
+                name={entry.name}
+                icon={entry.icon}
+                onDelete={() => handleDelete(entry.id)}
+              />
+            ))}
+          </View>
+        )}
       </ScrollView>
 
       {/* Add button (fixed at bottom) */}
@@ -78,19 +99,21 @@ export default function Index() {
 // Function to return styles based on the current theme
 const getStyles = (theme: ColorScheme) => {
   return StyleSheet.create({
+    entriesContainer: {
+      paddingTop: 20,
+      paddingBottom: 100, // Space for the add button
+    },
     header: {
       flexDirection: 'row',
-      justifyContent: 'space-between',
+      justifyContent: 'space-between',  // This pushes left and right items to edges
       alignItems: 'center',
-      position: 'relative',
+      position: 'relative',  // Important: makes this container a positioning reference
       paddingHorizontal: 16,
-      paddingTop: 40,          // Increase top padding to give more room for the title
-      paddingBottom: 20,       // Increase bottom padding for better balanced appearance
-      height: 80,              // Set a specific height to ensure consistent centering
+      paddingTop: 50,
+      paddingBottom: 10
     },
     mainContainer: {
       flex: 1,
-      position: 'relative',
       backgroundColor: theme === 'dark' ? '#000000' : '#ffffff',
     },
     scrollContainer: {
@@ -99,23 +122,19 @@ const getStyles = (theme: ColorScheme) => {
     },
     scrollContent: {
       flexGrow: 1, // Allow content to expand to fill available space
+      paddingTop: Platform.OS === 'ios' ? 50 : 30, // Add padding for status bar
     },
     appTitle: {
-      position: 'absolute',
-      left: 0,
-      right: 0,
+      flex: 1,
       textAlign: 'center',
       fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
       fontWeight: 'bold',
       letterSpacing: 1,
       fontSize: 25,
       color: theme === 'dark' ? '#f9f9f9' : '#333333',
-      // Center the title vertically with these properties:
-      top: 0,
-      bottom: 0,
-      textAlignVertical: 'center', // For Android
-      // Use lineHeight to help center text vertically
-      lineHeight: 90,          // Match the header height
+    },
+    placeholder: {
+      width: 44, // Same width as settings button
     },
 
     // Add placeholder style for left side of header

@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { router } from 'expo-router';
 import { useAuth } from '../../context/AuthContext';
-import { Fingerprint, Lock } from 'lucide-react-native';
+import { Fingerprint, Lock, ChevronLeft, ChevronRight } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as LocalAuthentication from 'expo-local-authentication';
 
@@ -32,7 +33,7 @@ export default function Security() {
   }, []);
 
   /**
-   * Set up biometric authentication and complete onboarding
+   * Set up biometric authentication and continue to preferences
    */
   const setupBiometrics = async () => {
     try {
@@ -55,28 +56,28 @@ export default function Security() {
 
       // Try to authenticate to make sure it works
       const result = await LocalAuthentication.authenticateAsync({
-        promptMessage: 'Authenticate to complete setup',
+        promptMessage: 'Authenticate to continue setup',
         fallbackLabel: 'Use PIN instead',
       });
 
       if (result.success) {
-        // Save setting and complete onboarding
+        // Save setting and continue to preferences
         await AsyncStorage.setItem('biometricsEnabled', 'true');
-        await setOnboardingComplete(true);
-        // Navigation will be handled by AuthContext
+        // Navigate to preferences instead of completing onboarding
+        router.push('/onboarding/preferences');
       } else {
         alert('Authentication failed. Please try again.');
       }
     } catch (error) {
       console.error('Failed to set up biometrics:', error);
       alert('There was an error setting up biometric authentication. You can change this later in settings.');
-      // Save preferences and mark onboarding as complete anyway
-      await setOnboardingComplete(true);
+      // Navigate to preferences anyway
+      router.push('/onboarding/preferences');
     }
   };
 
   /**
-   * Set up PIN authentication and complete onboarding
+   * Set up PIN authentication and continue to preferences
    */
   const setupPIN = async () => {
     try {
@@ -84,101 +85,116 @@ export default function Security() {
       // For this prototype, we'll just simulate it
       alert('PIN setup would happen here in a real app.');
 
-      // Save setting and complete onboarding
+      // Save setting and continue to preferences
       await AsyncStorage.setItem('biometricsEnabled', 'false');
-      await setOnboardingComplete(true);
-      // Navigation will be handled by AuthContext
+      router.push('/onboarding/preferences');
     } catch (error) {
       console.error('Failed to set up PIN:', error);
       alert('There was an error setting up PIN. You can change this later in settings.');
-      // Save preferences and mark onboarding as complete anyway
-      await setOnboardingComplete(true);
+      // Continue to preferences anyway
+      router.push('/onboarding/preferences');
     }
   };
 
   /**
-   * Skip security setup for now
+   * Skip security setup for now and continue to preferences
    */
   const skipForNow = async () => {
     try {
       // Save default preferences
       await AsyncStorage.setItem('biometricsEnabled', 'false');
 
-      // Complete onboarding
-      await setOnboardingComplete(true);
-      // Navigation will be handled by AuthContext
+      // Continue to preferences
+      router.push('/onboarding/preferences');
     } catch (error) {
-      console.error('Failed to complete onboarding:', error);
-      alert('There was an error completing setup. Please try again.');
+      console.error('Failed to skip security setup:', error);
+      alert('There was an error. Please try again.');
     }
   };
 
+  // Go back to about page
+  const goBack = () => {
+    router.push('./about');
+  };
+
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.content}>
-        <Text style={styles.title}>Secure Your App</Text>
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity style={styles.backButton} onPress={goBack}>
+          <ChevronLeft stroke="#ffffff" width={28} height={28} />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Security</Text>
+        <View style={styles.placeholder} />
+      </View>
+
+      <ScrollView style={styles.scrollContent}>
         <Text style={styles.subtitle}>
           Choose how you want to protect your authentication tokens.
         </Text>
 
-        <View style={styles.securityContainer}>
+        <View style={styles.securityOptions}>
           {/* Biometric Option */}
           <TouchableOpacity
-            style={styles.securityOption}
+            style={styles.optionContainer}
             onPress={setupBiometrics}
+            activeOpacity={0.7}
           >
             <LinearGradient
               colors={['#ff00ff', '#00ffff']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
-              style={styles.gradientBorder}
+              style={styles.gradient}
             >
-              <View style={styles.securityContent}>
-                <Fingerprint stroke="#00ffff" width={40} height={40} />
-                <Text style={styles.optionTitle}>Use Biometrics</Text>
-                <Text style={styles.optionDescription}>
-                  Secure your tokens with fingerprint or face recognition
-                </Text>
+              <View style={styles.innerBorder}>
+                <View style={styles.optionContent}>
+                  <Fingerprint color="#00ffff" size={40} />
+                  <Text style={styles.optionTitle}>Use Biometrics</Text>
+                  <Text style={styles.optionDescription}>
+                    Secure your tokens with fingerprint or face recognition
+                  </Text>
+                </View>
               </View>
             </LinearGradient>
           </TouchableOpacity>
 
           {/* PIN Option */}
           <TouchableOpacity
-            style={[styles.securityOption, !showPinOption && {opacity: 0.6}]}
+            style={[styles.optionContainer, !showPinOption && styles.disabledOption]}
             onPress={setupPIN}
             disabled={!showPinOption}
+            activeOpacity={0.7}
           >
             <LinearGradient
-              colors={showPinOption ? ['#ff00ff', '#00ffff'] : ['#444444', '#222222']}
+              colors={showPinOption ? ['#ff00ff', '#00ffff'] : ['#333333', '#222222']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
-              style={styles.gradientBorder}
+              style={styles.gradient}
             >
-              <View style={styles.securityContent}>
-                <Lock stroke={showPinOption ? "#00ffff" : "#666666"} width={40} height={40} />
-                <Text style={[styles.optionTitle, !showPinOption && {color: '#888888'}]}>
-                  Use PIN
-                </Text>
-                <Text style={[styles.optionDescription, !showPinOption && {color: '#666666'}]}>
-                  Secure your tokens with a numeric PIN code
-                </Text>
+              <View style={styles.innerBorder}>
+                <View style={styles.optionContent}>
+                  <Lock color={showPinOption ? "#00ffff" : "#666666"} size={40} />
+                  <Text style={[styles.optionTitle, !showPinOption && styles.disabledText]}>
+                    Use PIN Code
+                  </Text>
+                  <Text style={[styles.optionDescription, !showPinOption && styles.disabledText]}>
+                    Secure your tokens with a numeric PIN code
+                  </Text>
+                </View>
               </View>
             </LinearGradient>
           </TouchableOpacity>
         </View>
-      </View>
+      </ScrollView>
 
       {/* Skip Option */}
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={styles.skipButton}
-          onPress={skipForNow}
-        >
-          <Text style={styles.skipButtonText}>Skip for now</Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+      <TouchableOpacity
+        style={styles.skipButton}
+        onPress={skipForNow}
+        activeOpacity={0.7}
+      >
+        <Text style={styles.skipButtonText}>Skip for now</Text>
+      </TouchableOpacity>
+    </View>
   );
 }
 
@@ -186,31 +202,43 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#000000',
-  },
-  content: {
     padding: 20,
-    paddingTop: 60,
+    paddingTop: 50,
   },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginTop: 40,
-    marginBottom: 12,
-    color: '#FFFFFF',
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 30,
+  },
+  backButton: {
+    padding: 8,
+  },
+  headerTitle: {
     fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+    fontWeight: 'bold',
+    fontSize: 24,
+    color: '#FFFFFF',
+    letterSpacing: 1,
+  },
+  placeholder: {
+    width: 44,
+  },
+  scrollContent: {
+    flex: 1,
   },
   subtitle: {
     fontSize: 16,
     color: '#AAAAAA',
-    marginBottom: 40,
+    marginBottom: 30,
     lineHeight: 24,
     fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
   },
-  securityContainer: {
-    marginVertical: 20,
+  securityOptions: {
+    marginBottom: 30,
   },
-  securityOption: {
-    marginBottom: 24,
+  optionContainer: {
+    marginBottom: 20,
     shadowColor: '#ff00ff',
     shadowOffset: {
       width: 0,
@@ -220,14 +248,20 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     elevation: 8,
   },
-  gradientBorder: {
-    borderRadius: 8,
-    padding: 2, // Border thickness
+  disabledOption: {
+    opacity: 0.6,
+    shadowOpacity: 0.2,
   },
-  securityContent: {
+  gradient: {
+    borderRadius: 8,
+    padding: 2,
+  },
+  innerBorder: {
     backgroundColor: '#121212',
     borderRadius: 6,
     padding: 20,
+  },
+  optionContent: {
     alignItems: 'center',
   },
   optionTitle: {
@@ -244,9 +278,8 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
   },
-  buttonContainer: {
-    padding: 20,
-    paddingBottom: 40,
+  disabledText: {
+    color: '#666666',
   },
   skipButton: {
     padding: 16,
@@ -254,6 +287,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     borderColor: '#444444',
+    marginBottom: 30,
   },
   skipButtonText: {
     color: '#AAAAAA',

@@ -326,23 +326,6 @@ export default function Settings() {
             </LinearGradient>
           </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.actionButton}
-            onPress={() => router.push('/debug')}
-          >
-            <LinearGradient
-              colors={['#0088ff', '#00ffff']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={styles.actionGradient}
-            >
-              <View style={styles.actionContent}>
-                <Laptop stroke="#FFFFFF" width={20} height={20} />
-                <Text style={styles.actionText}>DEBUG SCREEN</Text>
-              </View>
-            </LinearGradient>
-</TouchableOpacity>
-
         </View>
 
         {/* App Info */}
@@ -380,7 +363,7 @@ const getStyles = (theme: ColorScheme) => {
       alignItems: 'center',
       position: 'relative',  // Important: makes this container a positioning reference
       paddingHorizontal: 16,
-      paddingTop: 10,
+      paddingTop: 50,
       paddingBottom: 10
     },
     backButton: {

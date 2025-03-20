@@ -9,7 +9,7 @@ import * as Updates from 'expo-updates';
 export async function resetOnboarding() {
   try {
     console.log('Completely resetting onboarding...');
-    
+
     // Clear ALL onboarding related items
     const keysToRemove = [
       'onboardComplete',
@@ -17,24 +17,24 @@ export async function resetOnboarding() {
       'biometricsEnabled',
       'userPIN'
     ];
-    
+
     // Remove all keys
     await AsyncStorage.multiRemove(keysToRemove);
-    
+
     // Double check they're gone
     const verifyValue = await AsyncStorage.getItem('onboardComplete');
     console.log('After reset, onboardComplete =', verifyValue);
-    
+
     // Set a temporary flag to indicate we're in the process of resetting
     await AsyncStorage.setItem('resetting', 'true');
-    
+
     // Alert the user before reloading
     alert('Onboarding has been reset. The app will now restart.');
-    
+
     // In development, we'll use router navigation
     if (__DEV__) {
       // Use router.navigate instead of replace
-      router.navigate('/onboarding/page1');
+      router.navigate('/onboarding/welcome');
     } else {
       // In production, we can use Expo Updates to reload the app completely
       await Updates.reloadAsync();
