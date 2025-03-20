@@ -1,58 +1,70 @@
 FROM ubuntu:22.04
 
-# Set environment variables
+# Set non-interactive installation
 ENV DEBIAN_FRONTEND=noninteractive
-ENV ANDROID_HOME=/opt/android-sdk
-ENV ANDROID_SDK_ROOT=/opt/android-sdk
-ENV ANDROID_NDK_HOME=/opt/android-sdk/ndk/25.2.9519653
-ENV PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/tools/bin:${ANDROID_HOME}/platform-tools
 
 # Install dependencies
-RUN apt-get update && apt-get install -y \
+RUN apt update && apt install -y \
     curl \
     git \
+    sudo \
     unzip \
     openjdk-17-jdk \
-    libgl1 \
-    libc++1 \
-    && rm -rf /var/lib/apt/lists/*
+    build-essential \
+    file \
+    python3 \
+    ca-certificates \
+    gnupg
 
 # Install Node.js 22.x
-RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
-    && apt-get install -y nodejs \
-    && rm -rf /var/lib/apt/lists/*
+RUN mkdir -p /etc/apt/keyrings
+RUN curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
+RUN echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_22.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list
+RUN apt update && apt install -y nodejs
 
-# Verify Node.js version
-RUN node --version && npm --version
+# Set JAVA_HOME
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 
 # Install Android SDK
-RUN mkdir -p ${ANDROID_HOME} && \
-    curl -o sdk-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip && \
-    unzip sdk-tools.zip -d ${ANDROID_HOME}/cmdline-tools && \
-    mv ${ANDROID_HOME}/cmdline-tools/cmdline-tools ${ANDROID_HOME}/cmdline-tools/latest && \
-    rm sdk-tools.zip
+ENV ANDROID_HOME=/opt/android-sdk
+RUN mkdir -p ${ANDROID_HOME}
 
-# Accept licenses and install Android components
-RUN yes | ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --licenses
-RUN ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager \
-    "platform-tools" \
-    "platforms;android-33" \
-    "build-tools;33.0.2" \
-    "ndk;25.2.9519653" \
-    "cmake;3.22.1"
+# Download and install Android SDK Command line tools
+RUN curl -o cmdline-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip \
+    && unzip cmdline-tools.zip -d ${ANDROID_HOME} \
+    && rm cmdline-tools.zip \
+    && mkdir -p ${ANDROID_HOME}/cmdline-tools/latest \
+    && mv ${ANDROID_HOME}/cmdline-tools/* ${ANDROID_HOME}/cmdline-tools/latest/ 2>/dev/null || true
 
-# Install global npm packages
-RUN npm install -g expo-cli eas-cli
+# Add Android SDK tools to PATH
+ENV PATH=${PATH}:${ANDROID_HOME}/cmdline-tools/latest/bin:${ANDROID_HOME}/platform-tools:${ANDROID_HOME}/tools/bin
 
-# Set working directory
+# Accept Android SDK licenses
+RUN mkdir -p ${ANDROID_HOME}/licenses \
+    && echo "8933bad161af4178b1185d1a37fbf41ea5269c55" > ${ANDROID_HOME}/licenses/android-sdk-license \
+    && echo "d56f5187479451eabf01fb78af6dfcb131a6481e" >> ${ANDROID_HOME}/licenses/android-sdk-license \
+    && echo "24333f8a63b6825ea9c5514f83c2829b004d1fee" >> ${ANDROID_HOME}/licenses/android-sdk-license
+
+# Install Android SDK packages
+RUN sdkmanager --update && \
+    sdkmanager "platform-tools" \
+    "platforms;android-35" \
+    "build-tools;35.0.0" \
+    "ndk;26.1.10909125"
+
+# Install Expo CLI and EAS CLI
+RUN npm install -g expo-cli eas-cli@15.0.14
+
+# Set permissions for SDK directory
+RUN chmod -R 777 ${ANDROID_HOME}
+
+# Set up a non-root user
+RUN useradd -m expo && \
+    echo "expo ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/expo
+
+USER expo
 WORKDIR /app
 
-# Create a non-root user to run the container
-RUN useradd -m appuser && chown -R appuser /app
-USER appuser
-
-# The app code will be mounted here
-VOLUME /app
-
-# Default command
+# Entrypoint
+ENTRYPOINT ["/bin/bash", "-c"]
 CMD ["bash"]
