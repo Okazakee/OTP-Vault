@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -6,7 +6,9 @@ import {
   TouchableOpacity,
   Alert,
   Platform,
-  Clipboard
+  Clipboard,
+  Animated,
+  Easing
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Copy } from 'lucide-react-native';
@@ -21,24 +23,44 @@ const TFAEntry = ({
   const [code, setCode] = useState('');
   const [timeRemaining, setTimeRemaining] = useState(30);
 
+  // Create an animated value for smooth transitions
+  const animatedTimeValue = useRef(new Animated.Value(30)).current;
+
+  // Start timer animation
+  const startTimerAnimation = () => {
+    // Reset to full value first
+    animatedTimeValue.setValue(30);
+
+    // Animate from 30 to 0 over 30 seconds
+    Animated.timing(animatedTimeValue, {
+      toValue: 0,
+      duration: 30000, // 30 seconds
+      easing: Easing.linear,
+      useNativeDriver: false // Must be false for layout properties like width
+    }).start();
+  };
+
   // Generate random 6-digit code
   const generateCode = () => {
     const randomCode = Math.floor(100000 + Math.random() * 900000).toString();
     setCode(randomCode);
     setTimeRemaining(30); // Reset timer
+
+    // Start the smooth animation
+    startTimerAnimation();
   };
 
-  // Generate code initially
+  // Generate code initially and set up timers
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
-    generateCode();
+    generateCode(); // Initial code generation and animation start
 
     // Regenerate code every 30 seconds
     const interval = setInterval(() => {
       generateCode();
     }, 30000);
 
-    // Update progress bar every second
+    // Update timeRemaining state every second (for any logic that needs it)
     const timer = setInterval(() => {
       setTimeRemaining(prev => Math.max(0, prev - 1));
     }, 1000);
@@ -90,8 +112,17 @@ const TFAEntry = ({
     );
   };
 
-  // Calculate progress percentage
-  const progressPercentage = (timeRemaining / 30) * 100;
+  // Animate width with interpolation
+  const widthInterpolation = animatedTimeValue.interpolate({
+    inputRange: [0, 30],
+    outputRange: ['0%', '100%'],
+  });
+
+  // Animate color with interpolation
+  const colorInterpolation = animatedTimeValue.interpolate({
+    inputRange: [0, 15, 30],  // 0 seconds, 15 seconds, 30 seconds
+    outputRange: ['rgb(255,0,0)', 'rgb(255,165,0)', 'rgb(0,255,0)']  // red, orange, green
+  });
 
   return (
     <TouchableOpacity
@@ -123,12 +154,15 @@ const TFAEntry = ({
           </View>
         </View>
 
-        {/* Progress bar */}
+        {/* Animated Progress bar */}
         <View style={styles.progressBarContainer}>
-          <View
+          <Animated.View
             style={[
               styles.progressBar,
-              { width: `${progressPercentage}%` }
+              {
+                width: widthInterpolation,
+                backgroundColor: colorInterpolation
+              }
             ]}
           />
         </View>
@@ -205,7 +239,6 @@ const styles = StyleSheet.create({
   },
   progressBar: {
     height: '100%',
-    backgroundColor: '#00ffff',
   },
 });
 

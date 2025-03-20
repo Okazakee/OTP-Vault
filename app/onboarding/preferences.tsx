@@ -1,20 +1,29 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Switch, ScrollView } from 'react-native';
-import { router } from 'expo-router';
-import { TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Switch, ScrollView, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuth } from '../../context/AuthContext';
 
+/**
+ * Preferences screen for onboarding process
+ * Allows users to set initial app preferences
+ */
 export default function Preferences() {
+  // Preference state
   const [notifications, setNotifications] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
   const [dataSync, setDataSync] = useState(true);
+
+  // Auth context for completing onboarding
   const { setOnboardingComplete } = useAuth();
-  
-  const toggleNotifications = () => setNotifications(previousState => !previousState);
-  const toggleDarkMode = () => setDarkMode(previousState => !previousState);
-  const toggleDataSync = () => setDataSync(previousState => !previousState);
-  
+
+  // Toggle handlers
+  const toggleNotifications = () => setNotifications(prev => !prev);
+  const toggleDarkMode = () => setDarkMode(prev => !prev);
+  const toggleDataSync = () => setDataSync(prev => !prev);
+
+  /**
+   * Save preferences and mark onboarding as complete
+   */
   const completeOnboarding = async () => {
     try {
       // Save all preferences
@@ -23,21 +32,19 @@ export default function Preferences() {
         darkMode,
         dataSync
       };
-      
+
       console.log('Saving preferences and completing onboarding...');
-      
       await AsyncStorage.setItem('userPreferences', JSON.stringify(preferences));
-      
+
       // Mark onboarding as complete using context
       await setOnboardingComplete(true);
-      
-      // The navigation will be handled by AuthContext
+      // Navigation will be handled by AuthContext
     } catch (error) {
       console.error('Failed to save preferences:', error);
       alert('There was an error saving your preferences. Please try again.');
     }
   };
-  
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.content}>
@@ -45,8 +52,9 @@ export default function Preferences() {
         <Text style={styles.subtitle}>
           Set your preferences for the app. You can always change these later in the settings.
         </Text>
-        
+
         <View style={styles.preferencesContainer}>
+          {/* Notifications Preference */}
           <View style={styles.preferenceItem}>
             <View>
               <Text style={styles.preferenceTitle}>Push Notifications</Text>
@@ -62,9 +70,10 @@ export default function Preferences() {
               value={notifications}
             />
           </View>
-          
+
           <View style={styles.separator} />
-          
+
+          {/* Dark Mode Preference */}
           <View style={styles.preferenceItem}>
             <View>
               <Text style={styles.preferenceTitle}>Dark Mode</Text>
@@ -80,9 +89,10 @@ export default function Preferences() {
               value={darkMode}
             />
           </View>
-          
+
           <View style={styles.separator} />
-          
+
+          {/* Data Sync Preference */}
           <View style={styles.preferenceItem}>
             <View>
               <Text style={styles.preferenceTitle}>Data Synchronization</Text>
@@ -100,7 +110,8 @@ export default function Preferences() {
           </View>
         </View>
       </View>
-      
+
+      {/* Complete Setup Button */}
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={styles.button}

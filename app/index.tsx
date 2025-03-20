@@ -1,83 +1,73 @@
-import React, { useEffect, useState } from "react";
-import { Text, View, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
+import React, { useState, useEffect } from "react";
+import { Text, View, StyleSheet, ScrollView } from "react-native";
 import { useColorScheme } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useAuth } from "../context/AuthContext";
-import { resetOnboarding } from "@/utils/resetHelper";
-import AddButton from "./components/AddButton";
 import { router } from "expo-router";
-import TFAEntry from "./components/TFAEntry";
+import AddButton from "./components/AddButton";
+
+// Import our utility function (which we'll create later)
+import { getOTPEntries } from "../utils/otpUtils";
 
 type ColorScheme = "light" | "dark";
-type Preferences = {
-  notifications: boolean;
-  darkMode: boolean;
-  dataSync: boolean;
-};
 
 export default function Index() {
-  // Get system color scheme
-  const systemColorScheme = useColorScheme() as ColorScheme;
+  // Track if we have entries and loading state
+  const [hasEntries, setHasEntries] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  // Get system color scheme for styling
+  const systemColorScheme = useColorScheme() as ColorScheme || "light";
+  const styles = getStyles(systemColorScheme);
 
-  // State for user preferences and authentication method
-  const [preferences, setPreferences] = useState<Preferences | null>(null);
-  const [authMethod, setAuthMethod] = useState<string>('None');
-
-  // Determine which color scheme to use based on user preference
-  const colorScheme = preferences?.darkMode ? "dark" : systemColorScheme;
-  const styles = getStyles(colorScheme);
-
+  // Check for entries when component mounts
   useEffect(() => {
-    // Load user preferences and authentication settings
-    const loadUserSettings = async () => {
+    // Function to check if we have any entries
+    const checkForEntries = async () => {
       try {
-        // Load preferences
-        const prefsString = await AsyncStorage.getItem('userPreferences');
-        if (prefsString) {
-          setPreferences(JSON.parse(prefsString));
-        } else {
-          // Set default preferences if none exist
-          setPreferences({
-            notifications: true,
-            darkMode: false,
-            dataSync: true
-          });
-        }
-
-        // Determine authentication method
-        const biometricsEnabled = await AsyncStorage.getItem('biometricsEnabled');
-        const pinEnabled = await AsyncStorage.getItem('userPIN');
-
-        if (biometricsEnabled === 'true') {
-          setAuthMethod('Biometrics');
-        } else if (pinEnabled) {
-          setAuthMethod('PIN');
-        } else {
-          setAuthMethod('None');
-        }
+        setIsLoading(true);
+        
+        // This function doesn't exist yet - we'll implement it later
+        // For now, it will always return null (empty)
+        const entries = await getOTPEntries();
+        
+        // Update state based on whether entries exist
+        setHasEntries(entries !== null && entries.length > 0);
       } catch (error) {
-        console.error('Error loading user settings:', error);
+        console.error('Error checking for entries:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    loadUserSettings();
+    checkForEntries();
   }, []);
-
-  // For demonstration purposes - allows resetting onboarding
-  const handleResetOnboarding = () => {
-    resetOnboarding();
-  };
 
   return (
     <View style={styles.mainContainer}>
-      <ScrollView style={styles.scrollContainer}>
-        <Text style={styles.infoTitle}>VaultFactor</Text>
+      {/* Main scrollable content area */}
+      <ScrollView 
+        style={styles.scrollContainer} 
+        contentContainerStyle={styles.scrollContent}
+      >
+        {/* App title */}
+        <Text style={styles.appTitle}>VaultFactor</Text>
+        
+        {/* Empty state message */}
+        {!hasEntries && !isLoading && (
+          <View style={styles.emptyStateContainer}>
+            <Text style={styles.emptyStateTitle}>No OTP Entries</Text>
+            <Text style={styles.emptyStateMessage}>
+              Tap the Add button below to set up your first two-factor authentication code.
+            </Text>
+          </View>
+        )}
+        
+        {/* Later, we'll add the entries list here when hasEntries is true */}
       </ScrollView>
 
-      <AddButton onPress={() => router.push('/components')} />
+      {/* Add button (fixed at bottom) */}
+      <AddButton onPress={() => router.push('/add-otp')} />
     </View>
   );
-
 }
 
 // Function to return styles based on the current theme
@@ -86,80 +76,43 @@ const getStyles = (theme: ColorScheme) => {
     mainContainer: {
       flex: 1,
       position: 'relative',
-      backgroundColor: '#000000', // Or whatever your background color is
+      backgroundColor: theme === 'dark' ? '#000000' : '#ffffff',
     },
     scrollContainer: {
       flex: 1,
       paddingBottom: 80, // Add padding to avoid content being hidden behind the button
     },
-    header: {
-      padding: 20,
-      paddingTop: 60,
-      backgroundColor: theme === 'dark' ? '#1E1E1E' : '#f8f8f8',
-      borderBottomWidth: 1,
-      borderBottomColor: theme === 'dark' ? '#333' : '#e0e0e0',
+    scrollContent: {
+      flexGrow: 1, // Allow content to expand to fill available space
     },
-    welcomeText: {
-      fontSize: 28,
-      fontWeight: 'bold',
-      color: theme === 'dark' ? '#f9f9f9' : '#333333',
-      marginBottom: 8,
-    },
-    subtitle: {
-      fontSize: 16,
-      color: theme === 'dark' ? '#aaa' : '#666',
-    },
-    infoCard: {
-      margin: 20,
-      padding: 20,
-      backgroundColor: theme === 'dark' ? '#2a2a2a' : '#ffffff',
-      borderRadius: 12,
-      shadowColor: "#000",
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
-      elevation: 3,
-    },
-    infoTitle: {
+    appTitle: {
       fontFamily: 'monospace',
       fontWeight: 'bold',
       letterSpacing: 1,
       alignSelf: 'center',
       fontSize: 25,
       marginBottom: 20,
-      marginTop: 10,
+      marginTop: 40,
       color: theme === 'dark' ? '#f9f9f9' : '#333333',
     },
-    infoRow: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      paddingVertical: 12,
-      borderBottomWidth: 1,
-      borderBottomColor: theme === 'dark' ? '#444' : '#f0f0f0',
-    },
-    infoLabel: {
-      fontSize: 16,
-      color: theme === 'dark' ? '#ccc' : '#555',
-    },
-    infoValue: {
-      fontSize: 16,
-      fontWeight: '500',
-      color: theme === 'dark' ? '#fff' : '#333',
-    },
-    buttonContainer: {
-      padding: 20,
-      paddingBottom: 0,
-    },
-    resetButton: {
-      backgroundColor: '#ff3b30',
-      padding: 16,
-      borderRadius: 8,
+    emptyStateContainer: {
+      flex: 1,
+      justifyContent: 'center',
       alignItems: 'center',
+      paddingHorizontal: 32,
+      marginTop: 40,
     },
-    resetButtonText: {
-      color: 'white',
+    emptyStateTitle: {
+      fontSize: 20,
       fontWeight: 'bold',
+      marginBottom: 12,
+      color: theme === 'dark' ? '#f9f9f9' : '#333333',
+    },
+    emptyStateMessage: {
       fontSize: 16,
-    }
+      textAlign: 'center',
+      lineHeight: 24,
+      color: theme === 'dark' ? '#aaaaaa' : '#666666',
+    },
   });
 };
