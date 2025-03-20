@@ -127,6 +127,7 @@ const styles = StyleSheet.create({
     width: 44,
   },
   image: {
+    filter: 'invert(1)',
     width: 80,
     height: 80,
     marginBottom: 30,
