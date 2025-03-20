@@ -13,9 +13,9 @@ import { router } from 'expo-router';
 import { ChevronLeft, Plus } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import ScanQRButton from './components/ScanQRButton';
-import { useTheme } from '@/context/ThemeContext';
+import { type ActiveTheme, useTheme } from '@/context/ThemeContext';
 
-type ColorScheme = "light" | "dark";
+
 
 export default function AddOTP() {
   // State for form fields
@@ -195,7 +195,7 @@ export default function AddOTP() {
 }
 
 // Function to return styles based on the current theme
-const getStyles = (theme: ColorScheme) => {
+const getStyles = (theme: ActiveTheme) => {
   return StyleSheet.create({
     container: {
       flex: 1,

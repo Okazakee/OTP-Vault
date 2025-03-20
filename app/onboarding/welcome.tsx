@@ -3,14 +3,19 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, Platform } from 'react
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ChevronRight } from 'lucide-react-native';
+import { type ActiveTheme, useTheme } from '../../context/ThemeContext';
 
 export default function OnboardingWelcome() {
+  const { activeTheme } = useTheme();
+  const isDark = activeTheme === 'dark';
+  const styles = getStyles(activeTheme);
+
   const goToNextStep = () => {
     router.push('./about');
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: isDark ? '#000000' : '#FFFFFF' }]}>
       <View style={styles.content}>
         <Image
           source={require('../../assets/vault.png')}
@@ -18,7 +23,7 @@ export default function OnboardingWelcome() {
           onError={(e) => console.log('Image not found: vault.png')}
         />
 
-        <Text style={styles.title}>VaultFactor</Text>
+        <Text style={[styles.title, { color: isDark ? '#FFFFFF' : '#000000' }]}>VaultFactor</Text>
 
         <LinearGradient
           colors={['#ff00ff', '#00ffff']}
@@ -26,8 +31,8 @@ export default function OnboardingWelcome() {
           end={{ x: 1, y: 1 }}
           style={styles.gradientCard}
         >
-          <View style={styles.cardContent}>
-            <Text style={styles.welcomeText}>
+          <View style={[styles.cardContent, { backgroundColor: isDark ? '#121212' : '#f0f0f0' }]}>
+            <Text style={[styles.welcomeText, { color: isDark ? '#FFFFFF' : '#000000' }]}>
               Welcome to VaultFactor, your secure 2FA token vault
             </Text>
           </View>
@@ -45,10 +50,10 @@ export default function OnboardingWelcome() {
           end={{ x: 1, y: 1 }}
           style={styles.gradient}
         >
-          <View style={styles.innerBorder}>
+          <View style={[styles.innerBorder, { backgroundColor: isDark ? '#121212' : '#f0f0f0' }]}>
             <View style={styles.buttonContent}>
-              <Text style={styles.buttonText}>GET STARTED</Text>
-              <ChevronRight color="#FFFFFF" size={24} />
+              <Text style={[styles.buttonText, { color: isDark ? '#FFFFFF' : '#000000' }]}>GET STARTED</Text>
+              <ChevronRight color={isDark ? '#FFFFFF' : '#000000'} size={24} />
             </View>
           </View>
         </LinearGradient>
@@ -57,92 +62,88 @@ export default function OnboardingWelcome() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'space-between',
-    backgroundColor: '#000000',
-    padding: 20,
-    paddingTop: 40,
-    paddingBottom: 40,
-  },
-  content: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  image: {
-    filter: 'invert(1)',
-    width: 160,
-    height: 160,
-    marginBottom: 40,
-  },
-  title: {
-    fontSize: 36,
-    fontWeight: 'bold',
-    marginBottom: 30,
-    color: '#FFFFFF',
-    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
-    letterSpacing: 2,
-  },
-  gradientCard: {
-    width: '100%',
-    borderRadius: 8,
-    padding: 2,
-    marginVertical: 20,
-    shadowColor: '#ff00ff',
-    shadowOffset: {
-      width: 0,
-      height: 8,
+const getStyles = (theme: ActiveTheme) => {
+  return StyleSheet.create({
+    container: {
+      flex: 1,
+      justifyContent: 'space-between',
+      padding: 20,
+      paddingTop: 40,
+      paddingBottom: 40,
     },
-    shadowOpacity: 0.5,
-    shadowRadius: 12,
-    elevation: 8,
-  },
-  cardContent: {
-    backgroundColor: '#121212',
-    borderRadius: 6,
-    padding: 20,
-  },
-  welcomeText: {
-    fontSize: 18,
-    color: '#FFFFFF',
-    textAlign: 'center',
-    lineHeight: 28,
-    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
-  },
-  buttonContainer: {
-    marginTop: 20,
-    width: '100%',
-    shadowColor: '#ff00ff',
-    shadowOffset: {
-      width: 0,
-      height: 8,
+    content: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
     },
-    shadowOpacity: 0.5,
-    shadowRadius: 12,
-    elevation: 8,
-  },
-  gradient: {
-    borderRadius: 4,
-    padding: 2,
-  },
-  innerBorder: {
-    backgroundColor: '#121212',
-    borderRadius: 2,
-    padding: 16,
-  },
-  buttonContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  buttonText: {
-    color: '#FFFFFF',
-    fontWeight: 'bold',
-    fontSize: 16,
-    letterSpacing: 2,
-    marginRight: 10,
-    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
-  },
-});
+    image: {
+      width: 160,
+      height: 160,
+      marginBottom: 40,
+      filter: theme === 'dark' ? 'invert(1)' : 'invert(0)',
+    },
+    title: {
+      fontSize: 36,
+      fontWeight: 'bold',
+      marginBottom: 30,
+      fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+      letterSpacing: 2,
+    },
+    gradientCard: {
+      width: '100%',
+      borderRadius: 8,
+      padding: theme === 'dark' ? 2 : 1.5,
+      marginVertical: 20,
+      shadowColor: '#ff00ff',
+      shadowOffset: {
+        width: 0,
+        height: 8,
+      },
+      shadowOpacity: 0.5,
+      shadowRadius: 12,
+      elevation: 8,
+    },
+    cardContent: {
+      borderRadius: 6,
+      padding: 20,
+    },
+    welcomeText: {
+      fontSize: 18,
+      textAlign: 'center',
+      lineHeight: 28,
+      fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+    },
+    buttonContainer: {
+      marginTop: 20,
+      width: '100%',
+      shadowColor: '#ff00ff',
+      shadowOffset: {
+        width: 0,
+        height: 8,
+      },
+      shadowOpacity: 0.5,
+      shadowRadius: 12,
+      elevation: 8,
+    },
+    gradient: {
+      borderRadius: 4,
+      padding: theme === 'dark' ? 2 : 1.5,
+    },
+    innerBorder: {
+      borderRadius: 2,
+      padding: 16,
+    },
+    buttonContent: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    buttonText: {
+      fontWeight: 'bold',
+      fontSize: 16,
+      letterSpacing: 2,
+      marginRight: 10,
+      fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+    },
+  })
+};

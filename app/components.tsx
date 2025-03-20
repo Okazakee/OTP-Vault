@@ -4,9 +4,7 @@ import AddButton from "./components/AddButton";
 import { router } from "expo-router";
 import TFAEntry from "./components/TFAEntry";
 import ScanQRButton from "./components/ScanQRButton";
-import { useTheme } from "@/context/ThemeContext";
-
-type ColorScheme = "light" | "dark";
+import { type ActiveTheme, useTheme } from "@/context/ThemeContext";
 
 export default function Components() {
 
@@ -32,7 +30,7 @@ export default function Components() {
 }
 
 // Function to return styles based on the current theme
-const getStyles = (theme: ColorScheme) => {
+const getStyles = (theme: ActiveTheme) => {
   return StyleSheet.create({
     container: {
       flex: 1,

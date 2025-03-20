@@ -12,7 +12,7 @@ function RootLayoutNav() {
 
   return (
     <View style={{ flex: 1, backgroundColor: activeTheme === 'dark' ? '#000000' : '#FFFFFF' }}>
-      <StatusBar style={activeTheme === 'dark' ? 'light' : 'dark'} />
+      <StatusBar style='auto' />
       <Stack
         screenOptions={{
           headerShown: false,

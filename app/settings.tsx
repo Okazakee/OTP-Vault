@@ -25,9 +25,9 @@ import {
   Puzzle
 } from 'lucide-react-native';
 import { resetOnboarding } from '../utils/resetHelper';
-import { useTheme } from '../context/ThemeContext';
+import { type ActiveTheme, useTheme } from '../context/ThemeContext';
 
-type ColorScheme = "light" | "dark";
+
 
 export default function Settings() {
   // Get theme from context
@@ -379,7 +379,7 @@ export default function Settings() {
 }
 
 // Function to return styles based on the current theme
-const getStyles = (theme: ColorScheme) => {
+const getStyles = (theme: ActiveTheme) => {
   return StyleSheet.create({
     disabledSettingRow: {
       opacity: 0.5,

@@ -7,9 +7,7 @@ import TFAEntry from "./components/TFAEntry";
 // Import our utility functions
 import { getOTPEntries, type OTPEntry, deleteOTPEntry } from "../utils/otpUtils";
 import SettingsButton from "./components/SettingsButton";
-import { useTheme } from "../context/ThemeContext";
-
-type ColorScheme = "light" | "dark";
+import { type ActiveTheme, useTheme } from "../context/ThemeContext";
 
 export default function Index() {
   // Track entries and loading state
@@ -97,7 +95,7 @@ export default function Index() {
 }
 
 // Function to return styles based on the current theme
-const getStyles = (theme: ColorScheme) => {
+const getStyles = (theme: ActiveTheme) => {
   return StyleSheet.create({
     entriesContainer: {
       paddingTop: 0,

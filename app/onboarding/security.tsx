@@ -3,15 +3,16 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Platform } from '
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import { useAuth } from '../../context/AuthContext';
-import { Fingerprint, Lock, ChevronLeft, ChevronRight } from 'lucide-react-native';
+import { Fingerprint, Lock, ChevronLeft } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as LocalAuthentication from 'expo-local-authentication';
+import { type ActiveTheme, useTheme } from '../../context/ThemeContext';
 
-/**
- * Security screen for onboarding process
- * Allows users to set up biometric or PIN authentication
- */
 export default function Security() {
+  const { activeTheme } = useTheme();
+  const isDark = activeTheme === 'dark';
+  const styles = getStyles(activeTheme);
+
   // Security preferences
   const [useBiometric, setUseBiometric] = useState(true);
   const [showPinOption, setShowPinOption] = useState(false);
@@ -118,17 +119,17 @@ export default function Security() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: isDark ? '#000000' : '#FFFFFF' }]}>
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={goBack}>
-          <ChevronLeft stroke="#ffffff" width={28} height={28} />
+          <ChevronLeft stroke={isDark ? "#ffffff" : "#000000"} width={28} height={28} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Security</Text>
+        <Text style={[styles.headerTitle, { color: isDark ? '#FFFFFF' : '#000000' }]}>Security</Text>
         <View style={styles.placeholder} />
       </View>
 
       <ScrollView style={styles.scrollContent}>
-        <Text style={styles.subtitle}>
+        <Text style={[styles.subtitle, { color: isDark ? '#AAAAAA' : '#666666' }]}>
           Choose how you want to protect your authentication tokens.
         </Text>
 
@@ -145,11 +146,11 @@ export default function Security() {
               end={{ x: 1, y: 1 }}
               style={styles.gradient}
             >
-              <View style={styles.innerBorder}>
+              <View style={[styles.innerBorder, { backgroundColor: isDark ? '#121212' : '#f8f8f8' }]}>
                 <View style={styles.optionContent}>
                   <Fingerprint color="#00ffff" size={40} />
-                  <Text style={styles.optionTitle}>Use Biometrics</Text>
-                  <Text style={styles.optionDescription}>
+                  <Text style={[styles.optionTitle, { color: isDark ? '#FFFFFF' : '#000000' }]}>Use Biometrics</Text>
+                  <Text style={[styles.optionDescription, { color: isDark ? '#AAAAAA' : '#666666' }]}>
                     Secure your tokens with fingerprint or face recognition
                   </Text>
                 </View>
@@ -170,13 +171,13 @@ export default function Security() {
               end={{ x: 1, y: 1 }}
               style={styles.gradient}
             >
-              <View style={styles.innerBorder}>
+              <View style={[styles.innerBorder, { backgroundColor: isDark ? '#121212' : '#f8f8f8' }]}>
                 <View style={styles.optionContent}>
                   <Lock color={showPinOption ? "#00ffff" : "#666666"} size={40} />
-                  <Text style={[styles.optionTitle, !showPinOption && styles.disabledText]}>
+                  <Text style={[styles.optionTitle, !showPinOption && styles.disabledText, { color: isDark ? '#FFFFFF' : '#000000' }]}>
                     Use PIN Code
                   </Text>
-                  <Text style={[styles.optionDescription, !showPinOption && styles.disabledText]}>
+                  <Text style={[styles.optionDescription, !showPinOption && styles.disabledText, { color: isDark ? '#AAAAAA' : '#666666' }]}>
                     Secure your tokens with a numeric PIN code
                   </Text>
                 </View>
@@ -188,111 +189,140 @@ export default function Security() {
 
       {/* Skip Option */}
       <TouchableOpacity
-        style={styles.skipButton}
+        style={styles.buttonContainer}
         onPress={skipForNow}
         activeOpacity={0.7}
       >
-        <Text style={styles.skipButtonText}>Skip for now</Text>
+        <LinearGradient
+          colors={['#ff00ff', '#00ffff']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.gradient}
+        >
+          <View style={[styles.innerBorder, { backgroundColor: isDark ? '#121212' : '#f0f0f0' }]}>
+            <View style={styles.buttonContent}>
+              <Text style={[styles.buttonText, { color: isDark ? '#FFFFFF' : '#000000' }]}>Skip for now</Text>
+            </View>
+          </View>
+        </LinearGradient>
       </TouchableOpacity>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#000000',
-    padding: 20,
-    paddingTop: 50,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 30,
-  },
-  backButton: {
-    padding: 8,
-  },
-  headerTitle: {
-    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
-    fontWeight: 'bold',
-    fontSize: 24,
-    color: '#FFFFFF',
-    letterSpacing: 1,
-  },
-  placeholder: {
-    width: 44,
-  },
-  scrollContent: {
-    flex: 1,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#AAAAAA',
-    marginBottom: 30,
-    lineHeight: 24,
-    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
-  },
-  securityOptions: {
-    marginBottom: 30,
-  },
-  optionContainer: {
-    marginBottom: 20,
-    shadowColor: '#ff00ff',
-    shadowOffset: {
-      width: 0,
-      height: 8,
+const getStyles = (theme: ActiveTheme) => {
+  return StyleSheet.create({
+    buttonContainer: {
+      marginTop: 20,
+      width: '100%',
+      shadowColor: '#ff00ff',
+      shadowOffset: {
+        width: 0,
+        height: 8,
+      },
+      shadowOpacity: 0.5,
+      shadowRadius: 12,
+      elevation: 8,
     },
-    shadowOpacity: 0.5,
-    shadowRadius: 12,
-    elevation: 8,
-  },
-  disabledOption: {
-    opacity: 0.6,
-    shadowOpacity: 0.2,
-  },
-  gradient: {
-    borderRadius: 8,
-    padding: 2,
-  },
-  innerBorder: {
-    backgroundColor: '#121212',
-    borderRadius: 6,
-    padding: 20,
-  },
-  optionContent: {
-    alignItems: 'center',
-  },
-  optionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
-    marginTop: 16,
-    marginBottom: 8,
-    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
-  },
-  optionDescription: {
-    color: '#AAAAAA',
-    textAlign: 'center',
-    lineHeight: 20,
-    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
-  },
-  disabledText: {
-    color: '#666666',
-  },
-  skipButton: {
-    padding: 16,
-    borderRadius: 8,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#444444',
-    marginBottom: 30,
-  },
-  skipButtonText: {
-    color: '#AAAAAA',
-    fontWeight: '600',
-    fontSize: 16,
-    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
-  },
-});
+    buttonContent: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    buttonText: {
+      fontWeight: 'bold',
+      fontSize: 16,
+      letterSpacing: 2,
+      marginRight: 10,
+      fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+    },
+    container: {
+      flex: 1,
+      padding: 20,
+      paddingTop: 50,
+    },
+    header: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: 30,
+    },
+    backButton: {
+      padding: 8,
+    },
+    headerTitle: {
+      fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+      fontWeight: 'bold',
+      fontSize: 24,
+      letterSpacing: 1,
+    },
+    placeholder: {
+      width: 44,
+    },
+    scrollContent: {
+      flex: 1,
+    },
+    subtitle: {
+      fontSize: 16,
+      marginBottom: 30,
+      lineHeight: 24,
+      fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+    },
+    securityOptions: {
+      marginBottom: 30,
+    },
+    optionContainer: {
+      marginBottom: 20,
+      shadowColor: '#ff00ff',
+      shadowOffset: {
+        width: 0,
+        height: 8,
+      },
+      shadowOpacity: 0.5,
+      shadowRadius: 12,
+      elevation: 8,
+    },
+    disabledOption: {
+      opacity: 0.6,
+      shadowOpacity: 0.2,
+    },
+    gradient: {
+      borderRadius: 8,
+      padding: theme === 'dark' ? 2 : 1.5,
+    },
+    innerBorder: {
+      borderRadius: 6,
+      padding: 20,
+    },
+    optionContent: {
+      alignItems: 'center',
+    },
+    optionTitle: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      marginTop: 16,
+      marginBottom: 8,
+      fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+    },
+    optionDescription: {
+      textAlign: 'center',
+      lineHeight: 20,
+      fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+    },
+    disabledText: {
+      color: '#666666',
+    },
+    skipButton: {
+      padding: 16,
+      borderRadius: 8,
+      alignItems: 'center',
+      borderWidth: 1,
+      marginBottom: 30,
+    },
+    skipButtonText: {
+      fontWeight: '600',
+      fontSize: 16,
+      fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+    },
+  })
+};

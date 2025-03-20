@@ -3,19 +3,24 @@ import { View, Text, StyleSheet, TouchableOpacity, Image, Platform } from 'react
 import { router } from 'expo-router';
 import { ChevronLeft, ChevronRight, ShieldCheck, Scan, Key, Clock } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { type ActiveTheme, useTheme } from '../../context/ThemeContext';
 
 export default function OnboardingAbout() {
+  const { activeTheme } = useTheme();
+  const isDark = activeTheme === 'dark';
+  const styles = getStyles(activeTheme);
+
   const goBack = () => router.push('/onboarding/welcome');
   const goNext = () => router.push('/onboarding/security');
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: isDark ? '#000000' : '#FFFFFF' }]}>
       <View style={styles.content}>
         <View style={styles.header}>
           <TouchableOpacity style={styles.backButton} onPress={goBack}>
-            <ChevronLeft stroke="#ffffff" width={28} height={28} />
+            <ChevronLeft stroke={isDark ? "#ffffff" : "#000000"} width={28} height={28} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>About</Text>
+          <Text style={[styles.headerTitle, { color: isDark ? '#FFFFFF' : '#000000' }]}>About</Text>
           <View style={styles.placeholder} />
         </View>
 
@@ -31,9 +36,9 @@ export default function OnboardingAbout() {
           end={{ x: 1, y: 1 }}
           style={styles.gradientCard}
         >
-          <View style={styles.cardContent}>
-            <Text style={styles.cardTitle}>What is VaultFactor?</Text>
-            <Text style={styles.cardText}>
+          <View style={[styles.cardContent, { backgroundColor: isDark ? '#121212' : '#eeeeee' }]}>
+            <Text style={[styles.cardTitle, { color: isDark ? '#FFFFFF' : '#000000' }]}>What is VaultFactor?</Text>
+            <Text style={[styles.cardText, { color: isDark ? '#FFFFFF' : '#000000' }]}>
               VaultFactor is a secure 2FA (Two-Factor Authentication) token generator
               that helps protect your online accounts.
             </Text>
@@ -41,32 +46,32 @@ export default function OnboardingAbout() {
         </LinearGradient>
 
         <View style={styles.featuresContainer}>
-          <View style={styles.featureRow}>
-            <View style={styles.featureIconContainer}>
-              <ShieldCheck color="#00ffff" size={24} />
+          <View style={[styles.featureRow, { backgroundColor: isDark ? '#121212' : '#eeeeee' }]}>
+            <View style={[styles.featureIconContainer, { backgroundColor: isDark ? '#1E1E1E' : '#d8d8d8' }]}>
+              <ShieldCheck color="#ff00ff" size={24} />
             </View>
-            <Text style={styles.featureText}>Generate secure TOTP codes</Text>
+            <Text style={[styles.featureText, { color: isDark ? '#FFFFFF' : '#000000' }]}>Generate secure TOTP codes</Text>
           </View>
 
-          <View style={styles.featureRow}>
-            <View style={styles.featureIconContainer}>
-              <Scan color="#00ffff" size={24} />
+          <View style={[styles.featureRow, { backgroundColor: isDark ? '#121212' : '#eeeeee' }]}>
+            <View style={[styles.featureIconContainer, { backgroundColor: isDark ? '#1E1E1E' : '#d8d8d8' }]}>
+              <Scan color="#ff00ff" size={24} />
             </View>
-            <Text style={styles.featureText}>Scan QR codes from websites</Text>
+            <Text style={[styles.featureText, { color: isDark ? '#FFFFFF' : '#000000' }]}>Scan QR codes from websites</Text>
           </View>
 
-          <View style={styles.featureRow}>
-            <View style={styles.featureIconContainer}>
-              <Key color="#00ffff" size={24} />
+          <View style={[styles.featureRow, { backgroundColor: isDark ? '#121212' : '#eeeeee' }]}>
+            <View style={[styles.featureIconContainer, { backgroundColor: isDark ? '#1E1E1E' : '#d8d8d8' }]}>
+              <Key color="#ff00ff" size={24} />
             </View>
-            <Text style={styles.featureText}>Secure with biometrics or PIN</Text>
+            <Text style={[styles.featureText, { color: isDark ? '#FFFFFF' : '#000000' }]}>Secure with biometrics or PIN</Text>
           </View>
 
-          <View style={styles.featureRow}>
-            <View style={styles.featureIconContainer}>
-              <Clock color="#00ffff" size={24} />
+          <View style={[styles.featureRow, { backgroundColor: isDark ? '#121212' : '#eeeeee' }]}>
+            <View style={[styles.featureIconContainer, { backgroundColor: isDark ? '#1E1E1E' : '#d8d8d8' }]}>
+              <Clock color="#ff00ff" size={24} />
             </View>
-            <Text style={styles.featureText}>Time-synced tokens</Text>
+            <Text style={[styles.featureText, { color: isDark ? '#FFFFFF' : '#000000' }]}>Time-synced tokens</Text>
           </View>
         </View>
       </View>
@@ -82,10 +87,10 @@ export default function OnboardingAbout() {
           end={{ x: 1, y: 1 }}
           style={styles.gradient}
         >
-          <View style={styles.innerBorder}>
+          <View style={[styles.innerBorder, { backgroundColor: isDark ? '#121212' : '#eeeeee' }]}>
             <View style={styles.buttonContent}>
-              <Text style={styles.buttonText}>CONTINUE</Text>
-              <ChevronRight color="#FFFFFF" size={24} />
+              <Text style={[styles.buttonText, { color: isDark ? '#FFFFFF' : '#000000' }]}>CONTINUE</Text>
+              <ChevronRight color={isDark ? '#FFFFFF' : '#000000'} size={24} />
             </View>
           </View>
         </LinearGradient>
@@ -94,136 +99,129 @@ export default function OnboardingAbout() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#000000',
-    padding: 20,
-    paddingTop: 50,
-    paddingBottom: 40,
-  },
-  content: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: '100%',
-    marginBottom: 20,
-  },
-  backButton: {
-    padding: 8,
-  },
-  headerTitle: {
-    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
-    fontWeight: 'bold',
-    fontSize: 24,
-    color: '#FFFFFF',
-    letterSpacing: 1,
-  },
-  placeholder: {
-    width: 44,
-  },
-  image: {
-    filter: 'invert(1)',
-    width: 80,
-    height: 80,
-    marginBottom: 30,
-  },
-  gradientCard: {
-    width: '100%',
-    borderRadius: 8,
-    padding: 2,
-    marginBottom: 30,
-    shadowColor: '#ff00ff',
-    shadowOffset: {
-      width: 0,
-      height: 8,
+const getStyles = (theme: ActiveTheme) => {
+  return StyleSheet.create({
+    container: {
+      flex: 1,
+      padding: 20,
+      paddingTop: 50,
+      paddingBottom: 40,
     },
-    shadowOpacity: 0.5,
-    shadowRadius: 12,
-    elevation: 8,
-  },
-  cardContent: {
-    backgroundColor: '#121212',
-    borderRadius: 6,
-    padding: 20,
-  },
-  cardTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
-    marginBottom: 15,
-    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
-    letterSpacing: 1,
-  },
-  cardText: {
-    fontSize: 16,
-    color: '#FFFFFF',
-    lineHeight: 24,
-    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
-  },
-  featuresContainer: {
-    width: '100%',
-    marginTop: 10,
-  },
-  featureRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 20,
-    backgroundColor: '#121212',
-    padding: 15,
-    borderRadius: 6,
-  },
-  featureIconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#1E1E1E',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 15,
-  },
-  featureText: {
-    fontSize: 16,
-    color: '#FFFFFF',
-    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
-    flex: 1,
-  },
-  buttonContainer: {
-    width: '100%',
-    marginTop: 20,
-    shadowColor: '#ff00ff',
-    shadowOffset: {
-      width: 0,
-      height: 8,
+    content: {
+      flex: 1,
+      alignItems: 'center',
     },
-    shadowOpacity: 0.5,
-    shadowRadius: 12,
-    elevation: 8,
-  },
-  gradient: {
-    borderRadius: 4,
-    padding: 2,
-  },
-  innerBorder: {
-    backgroundColor: '#121212',
-    borderRadius: 2,
-    padding: 16,
-  },
-  buttonContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  buttonText: {
-    color: '#FFFFFF',
-    fontWeight: 'bold',
-    fontSize: 16,
-    letterSpacing: 2,
-    marginRight: 10,
-    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
-  },
-});
+    header: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      width: '100%',
+      marginBottom: 20,
+    },
+    backButton: {
+      padding: 8,
+    },
+    headerTitle: {
+      fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+      fontWeight: 'bold',
+      fontSize: 24,
+      letterSpacing: 1,
+    },
+    placeholder: {
+      width: 44,
+    },
+    image: {
+      width: 80,
+      height: 80,
+      marginBottom: 30,
+      filter: theme === 'dark' ? 'invert(1)' : 'invert(0)',
+    },
+    gradientCard: {
+      width: '100%',
+      borderRadius: 8,
+      padding: theme === 'dark' ? 2 : 1.5,
+      marginBottom: 30,
+      shadowColor: '#ff00ff',
+      shadowOffset: {
+        width: 0,
+        height: 8,
+      },
+      shadowOpacity: 0.5,
+      shadowRadius: 12,
+      elevation: 8,
+    },
+    cardContent: {
+      borderRadius: 6,
+      padding: 20,
+    },
+    cardTitle: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      marginBottom: 15,
+      fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+      letterSpacing: 1,
+    },
+    cardText: {
+      fontSize: 16,
+      lineHeight: 24,
+      fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+    },
+    featuresContainer: {
+      width: '100%',
+      marginTop: 10,
+    },
+    featureRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 20,
+      padding: 15,
+      borderRadius: 6,
+    },
+    featureIconContainer: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginRight: 15,
+    },
+    featureText: {
+      fontSize: 16,
+      fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+      flex: 1,
+    },
+    buttonContainer: {
+      width: '100%',
+      marginTop: 20,
+      shadowColor: '#ff00ff',
+      shadowOffset: {
+        width: 0,
+        height: 8,
+      },
+      shadowOpacity: 0.5,
+      shadowRadius: 12,
+      elevation: 8,
+    },
+    gradient: {
+      borderRadius: 4,
+      padding: theme === 'dark' ? 2 : 1.5,
+    },
+    innerBorder: {
+      borderRadius: 2,
+      padding: 16,
+    },
+    buttonContent: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    buttonText: {
+      color: '#FFFFFF',
+      fontWeight: 'bold',
+      fontSize: 16,
+      letterSpacing: 2,
+      marginRight: 10,
+      fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+    },
+  })
+};

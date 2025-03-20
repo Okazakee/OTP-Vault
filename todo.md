@@ -1,0 +1,10 @@
+- notification functionality
+- biometrics functonality
+- pin functionality
+- hide otp functionality
+- auto lock functionality
+- delete all data functionality
+- qr scan functionality
+- add entry functionality
+- remove entry functionality
+- backup / import json structure

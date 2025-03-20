@@ -37,9 +37,12 @@
         "expo-splash-screen",
         {
           "image": "./assets/vault.png",
-          "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "dark": {
+            "image": "./assets/vault-dark.png",
+            "resizeMode": "contain",
+            "backgroundColor": "#000000"
+          }
         }
       ],
       "expo-font",
