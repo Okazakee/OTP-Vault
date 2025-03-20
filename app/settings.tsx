@@ -9,7 +9,6 @@ import {
   Alert,
   Platform
 } from 'react-native';
-import { useColorScheme } from 'react-native';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
@@ -23,30 +22,44 @@ import {
   Clock,
   EyeOff,
   Eclipse,
-  Laptop
+  Puzzle
 } from 'lucide-react-native';
 import { resetOnboarding } from '../utils/resetHelper';
+import { useTheme } from '../context/ThemeContext';
 
 type ColorScheme = "light" | "dark";
 
 export default function Settings() {
-  // Get system color scheme
-  const systemColorScheme = useColorScheme() as ColorScheme || "dark";
+  // Get theme from context
+  const { activeTheme, themeMode, setThemeMode } = useTheme();
 
   // State for settings options
-  const [darkMode, setDarkMode] = useState(systemColorScheme === "dark");
   const [biometrics, setBiometrics] = useState(true);
   const [notifications, setNotifications] = useState(true);
   const [autoLock, setAutoLock] = useState(true);
   const [codeHiding, setCodeHiding] = useState(false);
-  const [autoTheme, setAutoTheme] = useState(true);
+  const [autoTheme, setAutoTheme] = useState(themeMode === 'system');
+  const [darkMode, setDarkMode] = useState(activeTheme === 'dark');
 
   // Get styles based on color scheme
-  const styles = getStyles(darkMode ? "dark" : "light");
+  const styles = getStyles(activeTheme);
 
   // Handle navigation back
   const handleBack = () => {
     router.back();
+  };
+
+  // Handle changing theme settings
+  const handleAutoThemeChange = async (value: boolean) => {
+    setAutoTheme(value);
+    await setThemeMode(value ? 'system' : darkMode ? 'dark' : 'light');
+  };
+
+  const handleDarkModeChange = async (value: boolean) => {
+    if (!autoTheme) {
+      setDarkMode(value);
+      await setThemeMode(value ? 'dark' : 'light');
+    }
   };
 
   // Handle reset onboarding
@@ -92,7 +105,7 @@ export default function Settings() {
       {/* Header with back button */}
       <View style={styles.header}>
         <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-          <ChevronLeft stroke="#ffffff" width={28} height={28} />
+          <ChevronLeft stroke={activeTheme === 'dark' ? "#ffffff" : "#000000"} width={28} height={28} />
         </TouchableOpacity>
 
         <Text style={styles.headerTitle}>Settings</Text>
@@ -109,7 +122,7 @@ export default function Settings() {
           <View style={styles.settingRow}>
             <View style={styles.settingIconContainer}>
               <Eclipse
-                stroke={autoTheme ? "#00ffff" : "#999999"}
+                stroke={autoTheme ? "#00ffff" : "#777777"}
                 width={20}
                 height={20}
               />
@@ -124,7 +137,7 @@ export default function Settings() {
               trackColor={{ false: '#3e3e3e', true: '#81b0ff' }}
               thumbColor={autoTheme ? '#00ffff' : '#f4f3f4'}
               ios_backgroundColor="#3e3e3e"
-              onValueChange={() => setAutoTheme(!autoTheme)}
+              onValueChange={handleAutoThemeChange}
               value={autoTheme}
             />
           </View>
@@ -135,7 +148,7 @@ export default function Settings() {
           ]}>
             <View style={styles.settingIconContainer}>
               <Moon
-                stroke={darkMode && !autoTheme ? "#00ffff" : "#999999"}
+                stroke={darkMode && !autoTheme ? "#00ffff" : "#777777"}
                 width={20}
                 height={20}
               />
@@ -156,19 +169,15 @@ export default function Settings() {
               trackColor={{ false: '#3e3e3e', true: '#81b0ff' }}
               thumbColor={darkMode && !autoTheme ? '#00ffff' : '#f4f3f4'}
               ios_backgroundColor="#3e3e3e"
-              onValueChange={() => {
-                if (!autoTheme) {
-                  setDarkMode(!darkMode);
-                }
-              }}
+              onValueChange={handleDarkModeChange}
               value={darkMode}
               disabled={autoTheme}
             />
           </View>
 
-          <View style={styles.settingRow}>
+          <View style={[styles.settingRow, styles.lastRow]}>
             <View style={styles.settingIconContainer}>
-              <Bell stroke={notifications ? "#00ffff" : "#999999"} width={20} height={20} />
+              <Bell stroke={notifications ? "#00ffff" : "#777777"} width={20} height={20} />
             </View>
             <View style={styles.settingTextContainer}>
               <Text style={styles.settingTitle}>Notifications</Text>
@@ -193,7 +202,7 @@ export default function Settings() {
 
           <View style={styles.settingRow}>
             <View style={styles.settingIconContainer}>
-              <Fingerprint stroke={biometrics ? "#00ffff" : "#999999"} width={20} height={20} />
+              <Fingerprint stroke={biometrics ? "#00ffff" : "#777777"} width={20} height={20} />
             </View>
             <View style={styles.settingTextContainer}>
               <Text style={styles.settingTitle}>Biometric Authentication</Text>
@@ -212,7 +221,7 @@ export default function Settings() {
 
           <View style={styles.settingRow}>
             <View style={styles.settingIconContainer}>
-              <Clock stroke={autoLock ? "#00ffff" : "#999999"} width={20} height={20} />
+              <Clock stroke={autoLock ? "#00ffff" : "#777777"} width={20} height={20} />
             </View>
             <View style={styles.settingTextContainer}>
               <Text style={styles.settingTitle}>Auto-Lock</Text>
@@ -229,9 +238,9 @@ export default function Settings() {
             />
           </View>
 
-          <View style={styles.settingRow}>
+          <View style={[styles.settingRow, styles.lastRow]}>
             <View style={styles.settingIconContainer}>
-              <EyeOff stroke={codeHiding ? "#00ffff" : "#999999"} width={20} height={20} />
+              <EyeOff stroke={codeHiding ? "#00ffff" : "#777777"} width={20} height={20} />
             </View>
             <View style={styles.settingTextContainer}>
               <Text style={styles.settingTitle}>Hide Codes</Text>
@@ -253,79 +262,110 @@ export default function Settings() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>DATA MANAGEMENT</Text>
 
-          <TouchableOpacity
-            style={styles.actionButton}
-            onPress={() => Alert.alert("Backup", "Data backup not implemented in this version.")}
-          >
-            <LinearGradient
-              colors={['#00ffff', '#0088ff']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={styles.actionGradient}
+          <View style={styles.settingRow}>
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={() => Alert.alert("Backup", "Data backup not implemented in this version.")}
             >
-              <View style={styles.actionContent}>
-                <Shield stroke="#FFFFFF" width={20} height={20} />
-                <Text style={styles.actionText}>BACKUP YOUR DATA</Text>
-              </View>
-            </LinearGradient>
-          </TouchableOpacity>
+              <LinearGradient
+                colors={['#00ffff', '#0088ff']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={styles.actionGradient}
+              >
+                <View style={styles.actionContent}>
+                  <Shield stroke="#FFFFFF" width={20} height={20} />
+                  <Text style={styles.actionText}>BACKUP YOUR DATA</Text>
+                </View>
+              </LinearGradient>
+            </TouchableOpacity>
+          </View>
 
-          <TouchableOpacity
-            style={styles.actionButton}
-            onPress={() => Alert.alert("Import", "Data import not implemented in this version.")}
-          >
-            <LinearGradient
-              colors={['#00ffff', '#0088ff']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={styles.actionGradient}
+          <View style={[styles.settingRow, styles.lastRow]}>
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={() => Alert.alert("Import", "Data import not implemented in this version.")}
             >
-              <View style={styles.actionContent}>
-                <RefreshCw stroke="#FFFFFF" width={20} height={20} />
-                <Text style={styles.actionText}>IMPORT FROM BACKUP</Text>
-              </View>
-            </LinearGradient>
-          </TouchableOpacity>
+              <LinearGradient
+                colors={['#00ffff', '#0088ff']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={styles.actionGradient}
+              >
+                <View style={styles.actionContent}>
+                  <RefreshCw stroke="#FFFFFF" width={20} height={20} />
+                  <Text style={styles.actionText}>IMPORT FROM BACKUP</Text>
+                </View>
+              </LinearGradient>
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Reset Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>RESET OPTIONS</Text>
 
-          <TouchableOpacity
-            style={styles.actionButton}
-            onPress={handleResetOnboarding}
-          >
-            <LinearGradient
-              colors={['#ff9500', '#ff0000']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={styles.actionGradient}
+          <View style={styles.settingRow}>
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={handleResetOnboarding}
             >
-              <View style={styles.actionContent}>
-                <RefreshCw stroke="#FFFFFF" width={20} height={20} />
-                <Text style={styles.actionText}>RESET ONBOARDING</Text>
-              </View>
-            </LinearGradient>
-          </TouchableOpacity>
+              <LinearGradient
+                colors={['#ff9500', '#ff0000']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={styles.actionGradient}
+              >
+                <View style={styles.actionContent}>
+                  <RefreshCw stroke="#FFFFFF" width={20} height={20} />
+                  <Text style={styles.actionText}>RESET ONBOARDING</Text>
+                </View>
+              </LinearGradient>
+            </TouchableOpacity>
+          </View>
 
-          <TouchableOpacity
-            style={styles.actionButton}
-            onPress={handleResetAllData}
-          >
-            <LinearGradient
-              colors={['#ff0000', '#990000']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={styles.actionGradient}
+          <View style={[styles.settingRow, styles.lastRow]}>
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={handleResetAllData}
             >
-              <View style={styles.actionContent}>
-                <Trash2 stroke="#FFFFFF" width={20} height={20} />
-                <Text style={styles.actionText}>DELETE ALL DATA</Text>
-              </View>
-            </LinearGradient>
-          </TouchableOpacity>
+              <LinearGradient
+                colors={['#ff0000', '#990000']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={styles.actionGradient}
+              >
+                <View style={styles.actionContent}>
+                  <Trash2 stroke="#FFFFFF" width={20} height={20} />
+                  <Text style={styles.actionText}>DELETE ALL DATA</Text>
+                </View>
+              </LinearGradient>
+            </TouchableOpacity>
+          </View>
+        </View>
 
+        {/* DEBUG Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>DEBUG</Text>
+
+          <View style={[styles.settingRow, styles.lastRow]}>
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={() => router.push("/components")}
+            >
+              <LinearGradient
+                colors={['#55f550', '#fff000']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={styles.actionGradient}
+              >
+                <View style={styles.actionContent}>
+                  <Puzzle stroke="#000000" width={20} height={20} />
+                  <Text style={styles.actionText2}>COMPONENTS SHOWCASE</Text>
+                </View>
+              </LinearGradient>
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* App Info */}
@@ -363,8 +403,8 @@ const getStyles = (theme: ColorScheme) => {
       alignItems: 'center',
       position: 'relative',  // Important: makes this container a positioning reference
       paddingHorizontal: 16,
+      paddingBottom: 10,
       paddingTop: 50,
-      paddingBottom: 10
     },
     backButton: {
       padding: 8,
@@ -413,6 +453,9 @@ const getStyles = (theme: ColorScheme) => {
       borderBottomWidth: 1,
       borderBottomColor: theme === 'dark' ? '#333333' : '#E0E0E0',
     },
+    lastRow: {
+      borderBottomWidth: 0,
+    },
     settingIconContainer: {
       marginRight: 12,
       width: 40,
@@ -428,24 +471,25 @@ const getStyles = (theme: ColorScheme) => {
     settingTitle: {
       fontSize: 16,
       fontWeight: '600',
-      color: theme === 'dark' ? '#FFFFFF' : '#333333',
+      color: theme === 'dark' ? '#FFFFFF' : '#111111',
       marginBottom: 4,
       fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
     },
     settingDescription: {
       fontSize: 13,
-      color: theme === 'dark' ? '#AAAAAA' : '#666666',
+      color: theme === 'dark' ? '#AAAAAA' : '#555555',
       fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
     },
     themeTitle: {
       fontSize: 16,
       fontWeight: '600',
-      color: theme === 'dark' ? '#FFFFFF' : '#333333',
+      color: theme === 'dark' ? '#FFFFFF' : '#111111',
       marginVertical: 16,
       fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
     },
     actionButton: {
       marginVertical: 8,
+      width: '100%',
     },
     actionGradient: {
       borderRadius: 4,
@@ -465,6 +509,14 @@ const getStyles = (theme: ColorScheme) => {
       textTransform: 'uppercase',
       fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
     },
+    actionText2: {
+      color: '#000000',
+      fontWeight: 'bold',
+      marginLeft: 10,
+      letterSpacing: 1,
+      textTransform: 'uppercase',
+      fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+    },
     appInfo: {
       marginVertical: 20,
       alignItems: 'center',
@@ -472,13 +524,13 @@ const getStyles = (theme: ColorScheme) => {
     },
     appVersion: {
       fontSize: 14,
-      color: theme === 'dark' ? '#777777' : '#999999',
+      color: theme === 'dark' ? '#ffffff' : '#555555',
       marginBottom: 4,
       fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
     },
     appCopyright: {
       fontSize: 12,
-      color: theme === 'dark' ? '#666666' : '#AAAAAA',
+      color: theme === 'dark' ? '#999999' : '#555555',
       marginBottom: 20,
       fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
     },

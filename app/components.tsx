@@ -4,28 +4,27 @@ import AddButton from "./components/AddButton";
 import { router } from "expo-router";
 import TFAEntry from "./components/TFAEntry";
 import ScanQRButton from "./components/ScanQRButton";
+import { useTheme } from "@/context/ThemeContext";
 
 type ColorScheme = "light" | "dark";
-type Preferences = {
-  notifications: boolean;
-  darkMode: boolean;
-  dataSync: boolean;
-};
 
 export default function Components() {
 
+  const { activeTheme } = useTheme();
+
+  const styles = getStyles(activeTheme);
+
   return (
-    <ScrollView style={getStyles('dark').container}>
-      <Text style={getStyles("dark").infoTitle}>Showcase for app components</Text>
-      <View style={getStyles('dark').innerContainer}>
-        <Text style={getStyles("dark").infoLabel}>2fa entries</Text>
+    <ScrollView style={styles.container}>
+      <Text style={styles.infoTitle}>Showcase for app components</Text>
+      <View style={styles.innerContainer}>
+        <Text style={styles.infoLabel}>2fa entries</Text>
         <TFAEntry name="Github" icon="Github" onDelete={() => console.log('delete entry')} />
         <TFAEntry name="Aruba" icon="Aruba" onDelete={() => console.log('delete entry')} />
         <TFAEntry name="LinkedIn" icon="LinkedIn" onDelete={() => console.log('delete entry')} />
-        <Text style={getStyles("dark").infoLabel}>scan qr btn</Text>
+        <Text style={styles.infoLabel}>scan qr btn</Text>
         <ScanQRButton onPress={() => router.push('/components')} />
-        <Text style={getStyles("dark").infoLabel}>theme selector</Text>
-        <Text style={getStyles("dark").infoLabel}>add btn</Text>
+        <Text style={styles.infoLabel}>add btn</Text>
       </View>
       <AddButton onPress={() => router.push('/components')} />
     </ScrollView>
@@ -38,6 +37,7 @@ const getStyles = (theme: ColorScheme) => {
     container: {
       flex: 1,
       backgroundColor: theme === 'dark' ? '#000000' : '#ffffff',
+      marginTop: 50
     },
     innerContainer: {
       paddingBottom: 100
@@ -45,7 +45,7 @@ const getStyles = (theme: ColorScheme) => {
     },
     header: {
       padding: 20,
-      paddingTop: 60,
+      paddingTop: 80,
       backgroundColor: theme === 'dark' ? '#1E1E1E' : '#f8f8f8',
       borderBottomWidth: 1,
       borderBottomColor: theme === 'dark' ? '#333' : '#e0e0e0',

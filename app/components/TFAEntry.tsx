@@ -14,12 +14,18 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Copy } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 import Toast from 'react-native-toast-message';
+import { useTheme } from '../../context/ThemeContext';
 
-const TFAEntry = ({
-  name,
-  icon,
-  onDelete
-}: {name: string; icon: string; onDelete: () => void;}) => {
+type Props = {
+  name: string;
+  icon: string;
+  onDelete: () => void;
+};
+
+const TFAEntry = ({ name, icon, onDelete }: Props) => {
+  const { activeTheme } = useTheme();
+  const isDark = activeTheme === 'dark';
+
   const [code, setCode] = useState('');
   const [timeRemaining, setTimeRemaining] = useState(30);
 
@@ -138,24 +144,52 @@ const TFAEntry = ({
         end={{ x: 1, y: 1 }}
         style={styles.gradient}
       >
-        <View style={styles.innerContainer}>
+        <View style={[
+          styles.innerContainer,
+          { backgroundColor: isDark ? '#121212' : '#dddddd' }
+        ]}>
           {/* Icon placeholder - replace with actual icon library */}
-          <View style={styles.iconContainer}>
-            <Text style={styles.iconText}>{icon.charAt(0)}</Text>
+          <View style={[
+            styles.iconContainer,
+            { backgroundColor: isDark ? '#2a2a2a' : '#f0f0f0' }
+          ]}>
+            <Text style={[
+              styles.iconText,
+              { color: isDark ? '#00ffff' : '#ff00ff' }
+            ]}>
+              {icon.charAt(0)}
+            </Text>
           </View>
 
           <View style={styles.codeContainer}>
-            <Text style={styles.serviceName}>{name}</Text>
-            <Text style={styles.codeText}>{formattedCode}</Text>
+            <Text style={[
+              styles.serviceName,
+              { color: isDark ? '#aaaaaa' : '#666666' }
+            ]}>
+              {name}
+            </Text>
+            <Text style={[
+              styles.codeText,
+              { color: isDark ? '#dddddd' : '#121212' }
+            ]}>
+              {formattedCode}
+            </Text>
           </View>
 
           <View style={styles.copyIcon}>
-            <Copy stroke="#ffffff" width={16} height={16} />
+            <Copy
+              stroke={isDark ? "#dddddd" : "#333333"}
+              width={16}
+              height={16}
+            />
           </View>
         </View>
 
         {/* Animated Progress bar */}
-        <View style={styles.progressBarContainer}>
+        <View style={[
+          styles.progressBarContainer,
+          { backgroundColor: isDark ? '#242424' : '#e0e0e0' }
+        ]}>
           <Animated.View
             style={[
               styles.progressBar,
@@ -191,7 +225,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   innerContainer: {
-    backgroundColor: '#121212',
     borderRadius: 2,
     padding: 16,
     flexDirection: 'row',
@@ -201,13 +234,11 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 4,
-    backgroundColor: '#2a2a2a',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
   },
   iconText: {
-    color: '#00ffff',
     fontSize: 18,
     fontWeight: 'bold',
     fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
@@ -216,13 +247,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   serviceName: {
-    color: '#aaaaaa',
     fontSize: 12,
     fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
     marginBottom: 4,
   },
   codeText: {
-    color: '#ffffff',
     fontSize: 22,
     fontWeight: 'bold',
     letterSpacing: 2,
@@ -235,7 +264,6 @@ const styles = StyleSheet.create({
   progressBarContainer: {
     height: 3,
     width: '100%',
-    backgroundColor: '#242424',
   },
   progressBar: {
     height: '100%',

@@ -100,7 +100,7 @@ export default function Index() {
 const getStyles = (theme: ColorScheme) => {
   return StyleSheet.create({
     entriesContainer: {
-      paddingTop: 20,
+      paddingTop: 0,
       paddingBottom: 100, // Space for the add button
     },
     header: {
@@ -118,11 +118,11 @@ const getStyles = (theme: ColorScheme) => {
     },
     scrollContainer: {
       flex: 1,
+      paddingTop: 0,
       paddingBottom: 80, // Add padding to avoid content being hidden behind the button
     },
     scrollContent: {
       flexGrow: 1, // Allow content to expand to fill available space
-      paddingTop: Platform.OS === 'ios' ? 50 : 30, // Add padding for status bar
     },
     appTitle: {
       flex: 1,

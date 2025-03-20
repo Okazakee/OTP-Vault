@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { TouchableOpacity, StyleSheet } from 'react-native';
 import { Svg, Path, Defs, LinearGradient, Stop } from 'react-native-svg';
 import { router } from 'expo-router';
+import { useTheme } from '@/context/ThemeContext';
 
 /**
  * A settings icon button that navigates to the settings screen
@@ -10,6 +11,8 @@ import { router } from 'expo-router';
 const SettingsButton = () => {
   // Track whether the button is being pressed
   const [isPressed, setIsPressed] = useState(false);
+
+    const { activeTheme, themeMode, setThemeMode } = useTheme();
 
   // Navigate to settings screen when pressed
   const handlePress = () => {
@@ -27,7 +30,7 @@ const SettingsButton = () => {
       onPressIn={() => setIsPressed(true)}
       onPressOut={() => setIsPressed(false)}
     >
-      <Svg width={28} height={28} viewBox="0 0 24 24" fill="none" stroke={isPressed ? "url(#gradient)" : "#ffffff"} strokeWidth={2} strokeLinecap="square" strokeLinejoin="miter">
+      <Svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke={isPressed ? "url(#gradient)" : activeTheme === 'light' ? '#000000' : '#FFFFFF'} strokeWidth={2} strokeLinecap="square" strokeLinejoin="miter">
         {isPressed && (
           <Defs>
             <LinearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">

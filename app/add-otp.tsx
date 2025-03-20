@@ -13,6 +13,7 @@ import { router } from 'expo-router';
 import { ChevronLeft, Plus } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import ScanQRButton from './components/ScanQRButton';
+import { useTheme } from '@/context/ThemeContext';
 
 type ColorScheme = "light" | "dark";
 
@@ -22,9 +23,9 @@ export default function AddOTP() {
   const [serviceName, setServiceName] = useState('');
   const [isValid, setIsValid] = useState(false);
 
-  // We'll use a dark theme for the add screen to match your other screens
-  const theme: ColorScheme = "dark";
-  const styles = getStyles(theme);
+  const { activeTheme } = useTheme();
+
+  const styles = getStyles(activeTheme);
 
   // Handle navigation back
   const handleBack = () => {
@@ -92,7 +93,7 @@ export default function AddOTP() {
       {/* Header with back button */}
       <View style={styles.header}>
         <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-          <ChevronLeft stroke="#ffffff" width={28} height={28} />
+          <ChevronLeft stroke={activeTheme === 'dark' ? "#ffffff" : "#000000"} width={28} height={28} />
         </TouchableOpacity>
 
         <Text style={styles.headerTitle}>Add 2FA</Text>
@@ -198,7 +199,7 @@ const getStyles = (theme: ColorScheme) => {
   return StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: theme === 'dark' ? '#000000' : '#FFFFFF',
+      backgroundColor: theme === 'dark' ? '#000000' : '#ffffff',
     },
     header: {
       flexDirection: 'row',
@@ -206,7 +207,7 @@ const getStyles = (theme: ColorScheme) => {
       alignItems: 'center',
       position: 'relative',
       paddingHorizontal: 16,
-      paddingTop: Platform.OS === 'ios' ? 50 : 30,
+      paddingTop: 50,
       paddingBottom: 15,
     },
     backButton: {

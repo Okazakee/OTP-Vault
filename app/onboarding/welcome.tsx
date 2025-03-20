@@ -13,7 +13,7 @@ export default function OnboardingWelcome() {
     <View style={styles.container}>
       <View style={styles.content}>
         <Image
-          source={require('@/assets/vault.png')}
+          source={require('../../assets/vault.png')}
           style={styles.image}
           onError={(e) => console.log('Image not found: vault.png')}
         />
@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     backgroundColor: '#000000',
     padding: 20,
-    paddingTop: 60,
+    paddingTop: 40,
     paddingBottom: 40,
   },
   content: {
@@ -72,9 +72,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   image: {
-    width: 120,
-    height: 120,
-    marginBottom: 30,
+    filter: 'invert(1)',
+    width: 160,
+    height: 160,
+    marginBottom: 40,
   },
   title: {
     fontSize: 36,
