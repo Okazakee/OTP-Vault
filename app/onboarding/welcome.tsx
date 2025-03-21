@@ -28,7 +28,7 @@ export default function OnboardingWelcome() {
               onError={(e) => console.log('Image not found: vault.png')}
             />
 
-            <Text style={[styles.title, { color: isDark ? '#FFFFFF' : '#000000' }]}>OTP-Vault</Text>
+            <Text style={[styles.title, { color: isDark ? '#FFFFFF' : '#000000' }]}>OTP Vault</Text>
 
             <LinearGradient
               colors={['#ff00ff', '#00ffff']}
@@ -38,7 +38,7 @@ export default function OnboardingWelcome() {
             >
               <View style={[styles.cardContent, { backgroundColor: isDark ? '#121212' : '#f0f0f0' }]}>
                 <Text style={[styles.welcomeText, { color: isDark ? '#FFFFFF' : '#000000' }]}>
-                  Welcome to OTP-Vault, your secure 2FA token vault
+                  Welcome to OTP Vault, your secure 2FA token vault
                 </Text>
               </View>
             </LinearGradient>

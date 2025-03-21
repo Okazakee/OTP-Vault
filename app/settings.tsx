@@ -22,7 +22,8 @@ import {
   Clock,
   EyeOff,
   Eclipse,
-  Puzzle
+  Puzzle,
+  Info
 } from 'lucide-react-native';
 import { resetOnboarding } from '../utils/resetHelper';
 import { type ActiveTheme, useTheme } from '../context/ThemeContext';
@@ -368,11 +369,35 @@ export default function Settings() {
           </View>
         </View>
 
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>LEGAL</Text>
+
+          <View style={[styles.settingRow, styles.lastRow]}>
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={() => router.push("/privacy-policy")}
+            >
+              <LinearGradient
+                colors={['#00ffff', '#0088ff']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={styles.actionGradient}
+              >
+                <View style={styles.actionContent}>
+                  <Info stroke="#FFFFFF" width={20} height={20} />
+                  <Text style={styles.actionText}>PRIVACY POLICY</Text>
+                </View>
+              </LinearGradient>
+            </TouchableOpacity>
+          </View>
+        </View>
+
         {/* App Info */}
         <View style={styles.appInfo}>
-          <Text style={styles.appVersion}>OTP-Vault v1.0.0</Text>
+          <Text style={styles.appVersion}>OTP Vault v1.0.0</Text>
           <Text style={styles.appCopyright}>Made with ❤️ by Okazakee</Text>
         </View>
+
       </ScrollView>
     </View>
   );

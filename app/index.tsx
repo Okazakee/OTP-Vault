@@ -59,7 +59,7 @@ export default function Index() {
         {/* App title */}
         <View style={styles.header}>
           <View style={styles.placeholder} />
-          <Text style={styles.appTitle}>OTP-Vault</Text>
+          <Text style={styles.appTitle}>OTP Vault</Text>
           <SettingsButton />
         </View>
 

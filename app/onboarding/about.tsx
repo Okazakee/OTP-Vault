@@ -41,9 +41,9 @@ export default function OnboardingAbout() {
               style={styles.gradientCard}
             >
               <View style={[styles.cardContent, { backgroundColor: isDark ? '#121212' : '#eeeeee' }]}>
-                <Text style={[styles.cardTitle, { color: isDark ? '#FFFFFF' : '#000000' }]}>What is OTP-Vault?</Text>
+                <Text style={[styles.cardTitle, { color: isDark ? '#FFFFFF' : '#000000' }]}>What is OTP Vault?</Text>
                 <Text style={[styles.cardText, { color: isDark ? '#FFFFFF' : '#000000' }]}>
-                  OTP-Vault is a secure 2FA (Two-Factor Authentication) token generator
+                  OTP Vault is a secure 2FA (Two-Factor Authentication) token generator
                   that helps protect your online accounts.
                 </Text>
               </View>

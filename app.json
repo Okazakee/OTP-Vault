@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "OTP-Vault",
-    "slug": "OTP-Vault",
+    "name": "OTP Vault",
+    "slug": "otp-vault",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/vault.png",
+    "icon": "./assets/app-icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -13,23 +13,16 @@
       "bundleIdentifier": "com.okazakee.otp-vault"
     },
     "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/vault.png",
-        "backgroundColor": "#ffffff"
-      },
       "package": "com.okazakee.otp-vault",
       "buildToolsVersion": "33.0.0",
-        "compileSdkVersion": 33,
-        "targetSdkVersion": 33,
+      "compileSdkVersion": 33,
+      "targetSdkVersion": 33,
       "permissions": [
         "USE_BIOMETRIC",
-        "USE_FINGERPRINT"
-      ]
-    },
-    "web": {
-      "bundler": "metro",
-      "output": "static",
-      "favicon": "./assets/vault.png"
+        "USE_FINGERPRINT",
+        "CAMERA"
+      ],
+      "versionCode": 1
     },
     "plugins": [
       "expo-router",
@@ -57,8 +50,11 @@
         "origin": false
       },
       "eas": {
-        "projectId": "ed7ba74a-2478-4504-8c2f-4817513bc534"
+        "projectId": "f91b183f-fc51-4ad1-bf23-7b01f676bc67"
       }
-    }
+    },
+    "owner": "okazakee",
+    "privacy": "unlisted",
+    "githubUrl": "https://github.com/okazakee/otp-vault"
   }
 }
