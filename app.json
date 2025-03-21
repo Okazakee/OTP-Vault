@@ -17,6 +17,7 @@
       "buildToolsVersion": "33.0.0",
       "compileSdkVersion": 33,
       "targetSdkVersion": 33,
+      "excludedArchs": ["x86", "x86_64", "armeabi-v7a"],
       "permissions": [
         "USE_BIOMETRIC",
         "USE_FINGERPRINT",

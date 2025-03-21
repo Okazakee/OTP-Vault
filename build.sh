@@ -23,6 +23,6 @@ docker run --rm \
   -v "${HOME}/.gradle:/home/expo/.gradle" \
   -e EXPO_TOKEN=${EXPO_TOKEN} \
   expo-android-builder \
-  "cd /app && npm install && eas build --platform android --profile production --local --non-interactive"
+  "cd /app && npm install && eas build --platform android --profile preview --local --non-interactive"
 
 echo "Build completed. APK should be available in the project output directory."
