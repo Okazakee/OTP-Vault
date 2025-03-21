@@ -1,9 +1,10 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Platform } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Platform, ScrollView } from 'react-native';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ChevronRight } from 'lucide-react-native';
 import { type ActiveTheme, useTheme } from '../../context/ThemeContext';
+import { SwipeScreen } from '@/utils/swipeNav';
 
 export default function OnboardingWelcome() {
   const { activeTheme } = useTheme();
@@ -15,50 +16,57 @@ export default function OnboardingWelcome() {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: isDark ? '#000000' : '#FFFFFF' }]}>
-      <View style={styles.content}>
-        <Image
-          source={require('../../assets/vault.png')}
-          style={styles.image}
-          onError={(e) => console.log('Image not found: vault.png')}
-        />
+    <SwipeScreen nextRoute="./about" previousRoute={null}>
+      <View style={[styles.container, { backgroundColor: isDark ? '#000000' : '#FFFFFF' }]}>
 
-        <Text style={[styles.title, { color: isDark ? '#FFFFFF' : '#000000' }]}>VaultFactor</Text>
+        <ScrollView style={styles.scrollContent}>
 
-        <LinearGradient
-          colors={['#ff00ff', '#00ffff']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.gradientCard}
-        >
-          <View style={[styles.cardContent, { backgroundColor: isDark ? '#121212' : '#f0f0f0' }]}>
-            <Text style={[styles.welcomeText, { color: isDark ? '#FFFFFF' : '#000000' }]}>
-              Welcome to VaultFactor, your secure 2FA token vault
-            </Text>
+          <View style={styles.content}>
+            <Image
+              source={require('../../assets/vault.png')}
+              style={styles.image}
+              onError={(e) => console.log('Image not found: vault.png')}
+            />
+
+            <Text style={[styles.title, { color: isDark ? '#FFFFFF' : '#000000' }]}>VaultFactor</Text>
+
+            <LinearGradient
+              colors={['#ff00ff', '#00ffff']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.gradientCard}
+            >
+              <View style={[styles.cardContent, { backgroundColor: isDark ? '#121212' : '#f0f0f0' }]}>
+                <Text style={[styles.welcomeText, { color: isDark ? '#FFFFFF' : '#000000' }]}>
+                  Welcome to VaultFactor, your secure 2FA token vault
+                </Text>
+              </View>
+            </LinearGradient>
           </View>
-        </LinearGradient>
-      </View>
 
-      <TouchableOpacity
-        style={styles.buttonContainer}
-        onPress={goToNextStep}
-        activeOpacity={0.7}
-      >
-        <LinearGradient
-          colors={['#ff00ff', '#00ffff']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.gradient}
+        </ScrollView>
+
+        <TouchableOpacity
+          style={styles.buttonContainer}
+          onPress={goToNextStep}
+          activeOpacity={0.7}
         >
-          <View style={[styles.innerBorder, { backgroundColor: isDark ? '#121212' : '#f0f0f0' }]}>
-            <View style={styles.buttonContent}>
-              <Text style={[styles.buttonText, { color: isDark ? '#FFFFFF' : '#000000' }]}>GET STARTED</Text>
-              <ChevronRight color={isDark ? '#FFFFFF' : '#000000'} size={24} />
+          <LinearGradient
+            colors={['#ff00ff', '#00ffff']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.gradient}
+          >
+            <View style={[styles.innerBorder, { backgroundColor: isDark ? '#121212' : '#f0f0f0' }]}>
+              <View style={styles.buttonContent}>
+                <Text style={[styles.buttonText, { color: isDark ? '#FFFFFF' : '#000000' }]}>GET STARTED</Text>
+                <ChevronRight color={isDark ? '#FFFFFF' : '#000000'} size={24} />
+              </View>
             </View>
-          </View>
-        </LinearGradient>
-      </TouchableOpacity>
-    </View>
+          </LinearGradient>
+        </TouchableOpacity>
+      </View>
+    </SwipeScreen>
   );
 }
 
@@ -75,6 +83,10 @@ const getStyles = (theme: ActiveTheme) => {
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
+      minHeight: '100%'
+    },
+    scrollContent: {
+      flex: 1,
     },
     image: {
       width: 160,

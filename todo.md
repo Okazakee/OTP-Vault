@@ -8,3 +8,5 @@
 - add entry functionality
 - remove entry functionality
 - backup / import json structure
+- better adaptive icon
+- add touch navigation

@@ -5,6 +5,7 @@ import { ThemeProvider, useTheme } from '../context/ThemeContext';
 import Toast from 'react-native-toast-message';
 import { StatusBar } from 'expo-status-bar';
 import { View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 // RootLayoutNav wraps our navigation with theme controls
 function RootLayoutNav() {
@@ -30,9 +31,11 @@ function RootLayoutNav() {
 export default function RootLayout() {
   return (
     <AuthProvider>
+        <GestureHandlerRootView>
       <ThemeProvider>
-        <RootLayoutNav />
+          <RootLayoutNav />
       </ThemeProvider>
+        </GestureHandlerRootView>
     </AuthProvider>
   );
 }

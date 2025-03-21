@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Switch, TouchableOpacity, Platform } from 'react-native';
+import { View, Text, StyleSheet, Switch, TouchableOpacity, Platform, ScrollView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import { useAuth } from '../../context/AuthContext';
 import { ChevronLeft, Moon, Bell, Check } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { type ActiveTheme, useTheme } from '../../context/ThemeContext';
+import { SwipeScreen } from '@/utils/swipeNav';
 
 export default function Preferences() {
   const { activeTheme } = useTheme();
@@ -56,92 +57,98 @@ export default function Preferences() {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: isDark ? '#000000' : '#FFFFFF' }]}>
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={goBack}>
-          <ChevronLeft stroke={isDark ? "#ffffff" : "#000000"} width={28} height={28} />
+    <SwipeScreen nextRoute={null} previousRoute={'./security'}>
+      <View style={[styles.container, { backgroundColor: isDark ? '#000000' : '#FFFFFF' }]}>
+        <View style={styles.header}>
+          <TouchableOpacity style={styles.backButton} onPress={goBack}>
+            <ChevronLeft stroke={isDark ? "#ffffff" : "#000000"} width={28} height={28} />
+          </TouchableOpacity>
+          <Text style={[styles.headerTitle, { color: isDark ? '#FFFFFF' : '#000000' }]}>Preferences</Text>
+          <View style={styles.placeholder} />
+        </View>
+
+        <ScrollView style={styles.scrollContent}>
+
+          <View style={styles.content}>
+            <Text style={[styles.subtitle, { color: isDark ? '#AAAAAA' : '#666666' }]}>
+              Set your preferences for the app. You can always change these later in settings.
+            </Text>
+
+            <LinearGradient
+              colors={['#ff00ff', '#00ffff']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.gradientCard}
+            >
+              <View style={[styles.cardContent, { backgroundColor: isDark ? '#121212' : '#f8f8f8' }]}>
+                {/* Dark Mode Preference */}
+                <View style={styles.preferenceItem}>
+                  <View style={[styles.preferenceIconContainer, { backgroundColor: isDark ? '#2A2A2A' : '#e0e0e0' }]}>
+                    <Moon color={darkMode ? "#ff00ff" : "#999999"} size={24} />
+                  </View>
+                  <View style={styles.preferenceTextContainer}>
+                    <Text style={[styles.preferenceTitle, { color: isDark ? '#FFFFFF' : '#000000' }]}>Dark Mode</Text>
+                    <Text style={[styles.preferenceDescription, { color: isDark ? '#AAAAAA' : '#666666' }]}>
+                      Use dark theme for comfortable viewing
+                    </Text>
+                  </View>
+                  <Switch
+                    trackColor={{ false: '#3e3e3e', true: '#81b0ff' }}
+                    thumbColor={darkMode ? '#00ffff' : '#f4f3f4'}
+                    ios_backgroundColor="#3e3e3e"
+                    onValueChange={toggleDarkMode}
+                    value={darkMode}
+                  />
+                </View>
+
+                <View style={[styles.divider, { backgroundColor: isDark ? '#333333' : '#e0e0e0' }]} />
+
+                {/* Notifications Preference */}
+                <View style={styles.preferenceItem}>
+                  <View style={[styles.preferenceIconContainer, { backgroundColor: isDark ? '#2A2A2A' : '#e0e0e0' }]}>
+                    <Bell color={notifications ? "#ff00ff" : "#999999"} size={24} />
+                  </View>
+                  <View style={styles.preferenceTextContainer}>
+                    <Text style={[styles.preferenceTitle, { color: isDark ? '#FFFFFF' : '#000000' }]}>Notifications</Text>
+                    <Text style={[styles.preferenceDescription, { color: isDark ? '#AAAAAA' : '#666666' }]}>
+                      Get alerts about security events
+                    </Text>
+                  </View>
+                  <Switch
+                    trackColor={{ false: '#3e3e3e', true: '#81b0ff' }}
+                    thumbColor={notifications ? '#00ffff' : '#f4f3f4'}
+                    ios_backgroundColor="#3e3e3e"
+                    onValueChange={toggleNotifications}
+                    value={notifications}
+                  />
+                </View>
+              </View>
+            </LinearGradient>
+          </View>
+
+        </ScrollView>
+
+        <TouchableOpacity
+          style={styles.buttonContainer}
+          onPress={completeOnboarding}
+          activeOpacity={0.7}
+        >
+          <LinearGradient
+            colors={['#ff00ff', '#00ffff']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.gradient}
+          >
+            <View style={[styles.innerBorder, { backgroundColor: isDark ? '#121212' : '#f8f8f8' }]}>
+              <View style={styles.buttonContent}>
+                <Text style={[styles.buttonText, { color: isDark ? '#FFFFFF' : '#000000' }]}>COMPLETE SETUP</Text>
+                <Check color={isDark ? '#FFFFFF' : '#000000'} size={24} />
+              </View>
+            </View>
+          </LinearGradient>
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: isDark ? '#FFFFFF' : '#000000' }]}>Preferences</Text>
-        <View style={styles.placeholder} />
       </View>
-
-      <View style={styles.content}>
-        <Text style={[styles.subtitle, { color: isDark ? '#AAAAAA' : '#666666' }]}>
-          Set your preferences for the app. You can always change these later in settings.
-        </Text>
-
-        <LinearGradient
-          colors={['#ff00ff', '#00ffff']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.gradientCard}
-        >
-          <View style={[styles.cardContent, { backgroundColor: isDark ? '#121212' : '#f8f8f8' }]}>
-            {/* Dark Mode Preference */}
-            <View style={styles.preferenceItem}>
-              <View style={[styles.preferenceIconContainer, { backgroundColor: isDark ? '#2A2A2A' : '#e0e0e0' }]}>
-                <Moon color={darkMode ? "#ff00ff" : "#999999"} size={24} />
-              </View>
-              <View style={styles.preferenceTextContainer}>
-                <Text style={[styles.preferenceTitle, { color: isDark ? '#FFFFFF' : '#000000' }]}>Dark Mode</Text>
-                <Text style={[styles.preferenceDescription, { color: isDark ? '#AAAAAA' : '#666666' }]}>
-                  Use dark theme for comfortable viewing
-                </Text>
-              </View>
-              <Switch
-                trackColor={{ false: '#3e3e3e', true: '#81b0ff' }}
-                thumbColor={darkMode ? '#00ffff' : '#f4f3f4'}
-                ios_backgroundColor="#3e3e3e"
-                onValueChange={toggleDarkMode}
-                value={darkMode}
-              />
-            </View>
-
-            <View style={[styles.divider, { backgroundColor: isDark ? '#333333' : '#e0e0e0' }]} />
-
-            {/* Notifications Preference */}
-            <View style={styles.preferenceItem}>
-              <View style={[styles.preferenceIconContainer, { backgroundColor: isDark ? '#2A2A2A' : '#e0e0e0' }]}>
-                <Bell color={notifications ? "#ff00ff" : "#999999"} size={24} />
-              </View>
-              <View style={styles.preferenceTextContainer}>
-                <Text style={[styles.preferenceTitle, { color: isDark ? '#FFFFFF' : '#000000' }]}>Notifications</Text>
-                <Text style={[styles.preferenceDescription, { color: isDark ? '#AAAAAA' : '#666666' }]}>
-                  Get alerts about security events
-                </Text>
-              </View>
-              <Switch
-                trackColor={{ false: '#3e3e3e', true: '#81b0ff' }}
-                thumbColor={notifications ? '#00ffff' : '#f4f3f4'}
-                ios_backgroundColor="#3e3e3e"
-                onValueChange={toggleNotifications}
-                value={notifications}
-              />
-            </View>
-          </View>
-        </LinearGradient>
-      </View>
-
-      <TouchableOpacity
-        style={styles.buttonContainer}
-        onPress={completeOnboarding}
-        activeOpacity={0.7}
-      >
-        <LinearGradient
-          colors={['#ff00ff', '#00ffff']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.gradient}
-        >
-          <View style={[styles.innerBorder, { backgroundColor: isDark ? '#121212' : '#f8f8f8' }]}>
-            <View style={styles.buttonContent}>
-              <Text style={[styles.buttonText, { color: isDark ? '#FFFFFF' : '#000000' }]}>COMPLETE SETUP</Text>
-              <Check color={isDark ? '#FFFFFF' : '#000000'} size={24} />
-            </View>
-          </View>
-        </LinearGradient>
-      </TouchableOpacity>
-    </View>
+    </SwipeScreen>
   );
 }
 
@@ -157,6 +164,9 @@ const getStyles = (theme: ActiveTheme) => {
       justifyContent: 'space-between',
       alignItems: 'center',
       marginBottom: 30,
+    },
+    scrollContent: {
+      flex: 1,
     },
     backButton: {
       padding: 8,

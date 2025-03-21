@@ -7,6 +7,7 @@ import { Fingerprint, Lock, ChevronLeft } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as LocalAuthentication from 'expo-local-authentication';
 import { type ActiveTheme, useTheme } from '../../context/ThemeContext';
+import { SwipeScreen } from '@/utils/swipeNav';
 
 export default function Security() {
   const { activeTheme } = useTheme();
@@ -119,94 +120,96 @@ export default function Security() {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: isDark ? '#000000' : '#FFFFFF' }]}>
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={goBack}>
-          <ChevronLeft stroke={isDark ? "#ffffff" : "#000000"} width={28} height={28} />
-        </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: isDark ? '#FFFFFF' : '#000000' }]}>Security</Text>
-        <View style={styles.placeholder} />
-      </View>
-
-      <ScrollView style={styles.scrollContent}>
-        <Text style={[styles.subtitle, { color: isDark ? '#AAAAAA' : '#666666' }]}>
-          Choose how you want to protect your authentication tokens.
-        </Text>
-
-        <View style={styles.securityOptions}>
-          {/* Biometric Option */}
-          <TouchableOpacity
-            style={styles.optionContainer}
-            onPress={setupBiometrics}
-            activeOpacity={0.7}
-          >
-            <LinearGradient
-              colors={['#ff00ff', '#00ffff']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.gradient}
-            >
-              <View style={[styles.innerBorder, { backgroundColor: isDark ? '#121212' : '#f8f8f8' }]}>
-                <View style={styles.optionContent}>
-                  <Fingerprint color="#00ffff" size={40} />
-                  <Text style={[styles.optionTitle, { color: isDark ? '#FFFFFF' : '#000000' }]}>Use Biometrics</Text>
-                  <Text style={[styles.optionDescription, { color: isDark ? '#AAAAAA' : '#666666' }]}>
-                    Secure your tokens with fingerprint or face recognition
-                  </Text>
-                </View>
-              </View>
-            </LinearGradient>
+    <SwipeScreen nextRoute="./preferences" previousRoute={'./about'}>
+      <View style={[styles.container, { backgroundColor: isDark ? '#000000' : '#FFFFFF' }]}>
+        <View style={styles.header}>
+          <TouchableOpacity style={styles.backButton} onPress={goBack}>
+            <ChevronLeft stroke={isDark ? "#ffffff" : "#000000"} width={28} height={28} />
           </TouchableOpacity>
-
-          {/* PIN Option */}
-          <TouchableOpacity
-            style={[styles.optionContainer, !showPinOption && styles.disabledOption]}
-            onPress={setupPIN}
-            disabled={!showPinOption}
-            activeOpacity={0.7}
-          >
-            <LinearGradient
-              colors={showPinOption ? ['#ff00ff', '#00ffff'] : ['#333333', '#222222']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.gradient}
-            >
-              <View style={[styles.innerBorder, { backgroundColor: isDark ? '#121212' : '#f8f8f8' }]}>
-                <View style={styles.optionContent}>
-                  <Lock color={showPinOption ? "#00ffff" : "#666666"} size={40} />
-                  <Text style={[styles.optionTitle, !showPinOption && styles.disabledText, { color: isDark ? '#FFFFFF' : '#000000' }]}>
-                    Use PIN Code
-                  </Text>
-                  <Text style={[styles.optionDescription, !showPinOption && styles.disabledText, { color: isDark ? '#AAAAAA' : '#666666' }]}>
-                    Secure your tokens with a numeric PIN code
-                  </Text>
-                </View>
-              </View>
-            </LinearGradient>
-          </TouchableOpacity>
+          <Text style={[styles.headerTitle, { color: isDark ? '#FFFFFF' : '#000000' }]}>Security</Text>
+          <View style={styles.placeholder} />
         </View>
-      </ScrollView>
 
-      {/* Skip Option */}
-      <TouchableOpacity
-        style={styles.buttonContainer}
-        onPress={skipForNow}
-        activeOpacity={0.7}
-      >
-        <LinearGradient
-          colors={['#ff00ff', '#00ffff']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.gradient}
-        >
-          <View style={[styles.innerBorder, { backgroundColor: isDark ? '#121212' : '#f0f0f0' }]}>
-            <View style={styles.buttonContent}>
-              <Text style={[styles.buttonText, { color: isDark ? '#FFFFFF' : '#000000' }]}>Skip for now</Text>
-            </View>
+        <ScrollView style={styles.scrollContent}>
+          <Text style={[styles.subtitle, { color: isDark ? '#AAAAAA' : '#666666' }]}>
+            Choose how you want to protect your authentication tokens.
+          </Text>
+
+          <View style={styles.securityOptions}>
+            {/* Biometric Option */}
+            <TouchableOpacity
+              style={styles.optionContainer}
+              onPress={setupBiometrics}
+              activeOpacity={0.7}
+            >
+              <LinearGradient
+                colors={['#ff00ff', '#00ffff']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.gradient}
+              >
+                <View style={[styles.innerBorder, { backgroundColor: isDark ? '#121212' : '#f8f8f8' }]}>
+                  <View style={styles.optionContent}>
+                    <Fingerprint color="#00ffff" size={40} />
+                    <Text style={[styles.optionTitle, { color: isDark ? '#FFFFFF' : '#000000' }]}>Use Biometrics</Text>
+                    <Text style={[styles.optionDescription, { color: isDark ? '#AAAAAA' : '#666666' }]}>
+                      Secure your tokens with fingerprint or face recognition
+                    </Text>
+                  </View>
+                </View>
+              </LinearGradient>
+            </TouchableOpacity>
+
+            {/* PIN Option */}
+            <TouchableOpacity
+              style={[styles.optionContainer, !showPinOption && styles.disabledOption]}
+              onPress={setupPIN}
+              disabled={!showPinOption}
+              activeOpacity={0.7}
+            >
+              <LinearGradient
+                colors={showPinOption ? ['#ff00ff', '#00ffff'] : ['#333333', '#222222']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.gradient}
+              >
+                <View style={[styles.innerBorder, { backgroundColor: isDark ? '#121212' : '#f8f8f8' }]}>
+                  <View style={styles.optionContent}>
+                    <Lock color={showPinOption ? "#00ffff" : "#666666"} size={40} />
+                    <Text style={[styles.optionTitle, !showPinOption && styles.disabledText, { color: isDark ? '#FFFFFF' : '#000000' }]}>
+                      Use PIN Code
+                    </Text>
+                    <Text style={[styles.optionDescription, !showPinOption && styles.disabledText, { color: isDark ? '#AAAAAA' : '#666666' }]}>
+                      Secure your tokens with a numeric PIN code
+                    </Text>
+                  </View>
+                </View>
+              </LinearGradient>
+            </TouchableOpacity>
           </View>
-        </LinearGradient>
-      </TouchableOpacity>
-    </View>
+        </ScrollView>
+
+        {/* Skip Option */}
+        <TouchableOpacity
+          style={styles.buttonContainer}
+          onPress={skipForNow}
+          activeOpacity={0.7}
+        >
+          <LinearGradient
+            colors={['#ff00ff', '#00ffff']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.gradient}
+          >
+            <View style={[styles.innerBorder, { backgroundColor: isDark ? '#121212' : '#f0f0f0' }]}>
+              <View style={styles.buttonContent}>
+                <Text style={[styles.buttonText, { color: isDark ? '#FFFFFF' : '#000000' }]}>Skip for now</Text>
+              </View>
+            </View>
+          </LinearGradient>
+        </TouchableOpacity>
+      </View>
+    </SwipeScreen>
   );
 }
 

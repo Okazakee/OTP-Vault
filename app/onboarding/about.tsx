@@ -1,9 +1,10 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, Platform } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, Platform, ScrollView } from 'react-native';
 import { router } from 'expo-router';
 import { ChevronLeft, ChevronRight, ShieldCheck, Scan, Key, Clock } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { type ActiveTheme, useTheme } from '../../context/ThemeContext';
+import { SwipeScreen } from '@/utils/swipeNav';
 
 export default function OnboardingAbout() {
   const { activeTheme } = useTheme();
@@ -14,8 +15,8 @@ export default function OnboardingAbout() {
   const goNext = () => router.push('/onboarding/security');
 
   return (
-    <View style={[styles.container, { backgroundColor: isDark ? '#000000' : '#FFFFFF' }]}>
-      <View style={styles.content}>
+    <SwipeScreen nextRoute="./security" previousRoute={'./welcome'}>
+      <View style={[styles.container, { backgroundColor: isDark ? '#000000' : '#FFFFFF' }]}>
         <View style={styles.header}>
           <TouchableOpacity style={styles.backButton} onPress={goBack}>
             <ChevronLeft stroke={isDark ? "#ffffff" : "#000000"} width={28} height={28} />
@@ -24,78 +25,85 @@ export default function OnboardingAbout() {
           <View style={styles.placeholder} />
         </View>
 
-        <Image
-          source={require('@/assets/vault.png')}
-          style={styles.image}
-          onError={(e) => console.log('Image not found: vault.png')}
-        />
+        <ScrollView style={styles.scrollContent}>
+          <View style={styles.content}>
 
-        <LinearGradient
-          colors={['#ff00ff', '#00ffff']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.gradientCard}
+            <Image
+              source={require('@/assets/vault.png')}
+              style={styles.image}
+              onError={(e) => console.log('Image not found: vault.png')}
+            />
+
+            <LinearGradient
+              colors={['#ff00ff', '#00ffff']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.gradientCard}
+            >
+              <View style={[styles.cardContent, { backgroundColor: isDark ? '#121212' : '#eeeeee' }]}>
+                <Text style={[styles.cardTitle, { color: isDark ? '#FFFFFF' : '#000000' }]}>What is VaultFactor?</Text>
+                <Text style={[styles.cardText, { color: isDark ? '#FFFFFF' : '#000000' }]}>
+                  VaultFactor is a secure 2FA (Two-Factor Authentication) token generator
+                  that helps protect your online accounts.
+                </Text>
+              </View>
+            </LinearGradient>
+
+            <View style={styles.featuresContainer}>
+              <View style={[styles.featureRow, { backgroundColor: isDark ? '#121212' : '#eeeeee' }]}>
+                <View style={[styles.featureIconContainer, { backgroundColor: isDark ? '#1E1E1E' : '#d8d8d8' }]}>
+                  <ShieldCheck color="#ff00ff" size={24} />
+                </View>
+                <Text style={[styles.featureText, { color: isDark ? '#FFFFFF' : '#000000' }]}>Generate secure TOTP codes</Text>
+              </View>
+
+              <View style={[styles.featureRow, { backgroundColor: isDark ? '#121212' : '#eeeeee' }]}>
+                <View style={[styles.featureIconContainer, { backgroundColor: isDark ? '#1E1E1E' : '#d8d8d8' }]}>
+                  <Scan color="#ff00ff" size={24} />
+                </View>
+                <Text style={[styles.featureText, { color: isDark ? '#FFFFFF' : '#000000' }]}>Scan QR codes from websites</Text>
+              </View>
+
+              <View style={[styles.featureRow, { backgroundColor: isDark ? '#121212' : '#eeeeee' }]}>
+                <View style={[styles.featureIconContainer, { backgroundColor: isDark ? '#1E1E1E' : '#d8d8d8' }]}>
+                  <Key color="#ff00ff" size={24} />
+                </View>
+                <Text style={[styles.featureText, { color: isDark ? '#FFFFFF' : '#000000' }]}>Secure with biometrics or PIN</Text>
+              </View>
+
+              <View style={[styles.featureRow, { backgroundColor: isDark ? '#121212' : '#eeeeee' }]}>
+                <View style={[styles.featureIconContainer, { backgroundColor: isDark ? '#1E1E1E' : '#d8d8d8' }]}>
+                  <Clock color="#ff00ff" size={24} />
+                </View>
+                <Text style={[styles.featureText, { color: isDark ? '#FFFFFF' : '#000000' }]}>Time-synced tokens</Text>
+              </View>
+            </View>
+
+          </View>
+        </ScrollView>
+
+
+        <TouchableOpacity
+          style={styles.buttonContainer}
+          onPress={goNext}
+          activeOpacity={0.7}
         >
-          <View style={[styles.cardContent, { backgroundColor: isDark ? '#121212' : '#eeeeee' }]}>
-            <Text style={[styles.cardTitle, { color: isDark ? '#FFFFFF' : '#000000' }]}>What is VaultFactor?</Text>
-            <Text style={[styles.cardText, { color: isDark ? '#FFFFFF' : '#000000' }]}>
-              VaultFactor is a secure 2FA (Two-Factor Authentication) token generator
-              that helps protect your online accounts.
-            </Text>
-          </View>
-        </LinearGradient>
-
-        <View style={styles.featuresContainer}>
-          <View style={[styles.featureRow, { backgroundColor: isDark ? '#121212' : '#eeeeee' }]}>
-            <View style={[styles.featureIconContainer, { backgroundColor: isDark ? '#1E1E1E' : '#d8d8d8' }]}>
-              <ShieldCheck color="#ff00ff" size={24} />
+          <LinearGradient
+            colors={['#ff00ff', '#00ffff']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.gradient}
+          >
+            <View style={[styles.innerBorder, { backgroundColor: isDark ? '#121212' : '#eeeeee' }]}>
+              <View style={styles.buttonContent}>
+                <Text style={[styles.buttonText, { color: isDark ? '#FFFFFF' : '#000000' }]}>CONTINUE</Text>
+                <ChevronRight color={isDark ? '#FFFFFF' : '#000000'} size={24} />
+              </View>
             </View>
-            <Text style={[styles.featureText, { color: isDark ? '#FFFFFF' : '#000000' }]}>Generate secure TOTP codes</Text>
-          </View>
-
-          <View style={[styles.featureRow, { backgroundColor: isDark ? '#121212' : '#eeeeee' }]}>
-            <View style={[styles.featureIconContainer, { backgroundColor: isDark ? '#1E1E1E' : '#d8d8d8' }]}>
-              <Scan color="#ff00ff" size={24} />
-            </View>
-            <Text style={[styles.featureText, { color: isDark ? '#FFFFFF' : '#000000' }]}>Scan QR codes from websites</Text>
-          </View>
-
-          <View style={[styles.featureRow, { backgroundColor: isDark ? '#121212' : '#eeeeee' }]}>
-            <View style={[styles.featureIconContainer, { backgroundColor: isDark ? '#1E1E1E' : '#d8d8d8' }]}>
-              <Key color="#ff00ff" size={24} />
-            </View>
-            <Text style={[styles.featureText, { color: isDark ? '#FFFFFF' : '#000000' }]}>Secure with biometrics or PIN</Text>
-          </View>
-
-          <View style={[styles.featureRow, { backgroundColor: isDark ? '#121212' : '#eeeeee' }]}>
-            <View style={[styles.featureIconContainer, { backgroundColor: isDark ? '#1E1E1E' : '#d8d8d8' }]}>
-              <Clock color="#ff00ff" size={24} />
-            </View>
-            <Text style={[styles.featureText, { color: isDark ? '#FFFFFF' : '#000000' }]}>Time-synced tokens</Text>
-          </View>
-        </View>
+          </LinearGradient>
+        </TouchableOpacity>
       </View>
-
-      <TouchableOpacity
-        style={styles.buttonContainer}
-        onPress={goNext}
-        activeOpacity={0.7}
-      >
-        <LinearGradient
-          colors={['#ff00ff', '#00ffff']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.gradient}
-        >
-          <View style={[styles.innerBorder, { backgroundColor: isDark ? '#121212' : '#eeeeee' }]}>
-            <View style={styles.buttonContent}>
-              <Text style={[styles.buttonText, { color: isDark ? '#FFFFFF' : '#000000' }]}>CONTINUE</Text>
-              <ChevronRight color={isDark ? '#FFFFFF' : '#000000'} size={24} />
-            </View>
-          </View>
-        </LinearGradient>
-      </TouchableOpacity>
-    </View>
+    </SwipeScreen>
   );
 }
 
@@ -103,13 +111,17 @@ const getStyles = (theme: ActiveTheme) => {
   return StyleSheet.create({
     container: {
       flex: 1,
+      justifyContent: 'space-between',
       padding: 20,
-      paddingTop: 50,
+      paddingTop: 40,
       paddingBottom: 40,
     },
     content: {
       flex: 1,
       alignItems: 'center',
+    },
+    scrollContent: {
+      flex: 1,
     },
     header: {
       flexDirection: 'row',
