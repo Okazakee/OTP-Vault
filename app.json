@@ -10,10 +10,10 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.okazakee.otp-vault"
+      "bundleIdentifier": "com.okazakee.otpvault"
     },
     "android": {
-      "package": "com.okazakee.otp-vault",
+      "package": "com.okazakee.otpvault",
       "buildToolsVersion": "33.0.0",
       "compileSdkVersion": 33,
       "targetSdkVersion": 33,
@@ -21,8 +21,7 @@
         "USE_BIOMETRIC",
         "USE_FINGERPRINT",
         "CAMERA"
-      ],
-      "versionCode": 1
+      ]
     },
     "plugins": [
       "expo-router",
