@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "VaultFactor",
-    "slug": "VaultFactor",
+    "name": "OTP-Vault",
+    "slug": "OTP-Vault",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/vault.png",
@@ -10,14 +10,14 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.okazakee.vaultfactor"
+      "bundleIdentifier": "com.okazakee.otp-vault"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/vault.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.okazakee.vaultfactor",
+      "package": "com.okazakee.otp-vault",
       "buildToolsVersion": "33.0.0",
         "compileSdkVersion": 33,
         "targetSdkVersion": 33,

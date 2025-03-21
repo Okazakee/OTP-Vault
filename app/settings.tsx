@@ -370,7 +370,7 @@ export default function Settings() {
 
         {/* App Info */}
         <View style={styles.appInfo}>
-          <Text style={styles.appVersion}>VaultFactor v1.0.0</Text>
+          <Text style={styles.appVersion}>OTP-Vault v1.0.0</Text>
           <Text style={styles.appCopyright}>Made with ❤️ by Okazakee</Text>
         </View>
       </ScrollView>
