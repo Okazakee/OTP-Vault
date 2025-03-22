@@ -13,9 +13,15 @@ export function SwipeScreen({
     .onEnd((event) => {
       if (Math.abs(event.translationX) > Math.abs(event.translationY)) {
         if (event.translationX > 100 && previousRoute) {
-          router.push(previousRoute);
+          router.push({
+            pathname: previousRoute,
+            params: { direction: 'back' }
+          });
         } else if (event.translationX < -100 && nextRoute) {
-          router.push(nextRoute);
+          router.push({
+            pathname: nextRoute,
+            params: { direction: 'forward' }
+          });
         }
       }
     });

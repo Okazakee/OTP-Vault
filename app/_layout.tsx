@@ -30,12 +30,12 @@ function RootLayoutNav() {
 // Root layout wraps everything with our providers
 export default function RootLayout() {
   return (
-    <AuthProvider>
-        <GestureHandlerRootView>
-      <ThemeProvider>
-          <RootLayoutNav />
-      </ThemeProvider>
-        </GestureHandlerRootView>
-    </AuthProvider>
+    <GestureHandlerRootView>
+      <AuthProvider>
+        <ThemeProvider>
+            <RootLayoutNav />
+        </ThemeProvider>
+      </AuthProvider>
+    </GestureHandlerRootView>
   );
 }
